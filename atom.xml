@@ -1,35 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="https://www.w3.org/2005/Atom">
-  <title>Hexo</title>
+  <title>王军飞的随笔</title>
   
-  
+  <subtitle>jonefeewang</subtitle>
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://yoursite.com/"/>
-  <updated>2019-11-18T07:11:47.065Z</updated>
+  <updated>2019-11-18T10:05:55.142Z</updated>
   <id>http://yoursite.com/</id>
   
   <author>
-    <name>John Doe</name>
+    <name>王军飞</name>
     
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
   
   <entry>
-    <title>Hello World</title>
-    <link href="http://yoursite.com/2019/11/18/hello-world/"/>
-    <id>http://yoursite.com/2019/11/18/hello-world/</id>
-    <published>2019-11-18T07:11:47.065Z</published>
-    <updated>2019-11-18T07:11:47.065Z</updated>
+    <title>跨部门协作</title>
+    <link href="http://yoursite.com/2019/11/18/%E8%B7%A8%E9%83%A8%E9%97%A8%E5%8D%8F%E4%BD%9C/"/>
+    <id>http://yoursite.com/2019/11/18/%E8%B7%A8%E9%83%A8%E9%97%A8%E5%8D%8F%E4%BD%9C/</id>
+    <published>2019-11-18T09:56:00.000Z</published>
+    <updated>2019-11-18T10:05:55.142Z</updated>
     
-    <content type="html"><![CDATA[<p>Welcome to <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/" target="_blank" rel="noopener">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html" target="_blank" rel="noopener">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="noopener">GitHub</a>.</p><h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">"My New Post"</span></span><br></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/writing.html" target="_blank" rel="noopener">Writing</a></p><h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/server.html" target="_blank" rel="noopener">Server</a></p><h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/generating.html" target="_blank" rel="noopener">Generating</a></p><h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/one-command-deployment.html" target="_blank" rel="noopener">Deployment</a></p>]]></content>
+    <content type="html"><![CDATA[<p>转自: <a href="https://zhuanlan.zhihu.com/p/27234918" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/27234918</a></p><p>三个关键步骤，第一步就可以拿60分，第二部可以拿80分，第三部可以拿120分。</p><p>对一般人来说第一步就够了，已经可以解决绝大多数问题。</p><p>一、正确表达需求</p><ol><li><p>了解对方需求。将欲取之，必思与之，任何能够成功争取资源工作方式的逻辑起点都是对方的需求，对方的职位KPI是什么，对方的个人偏好是什么，对方的工作的状态如何，你的需求需要对方的工作时间如何，你能给对方提供什么。这些都搞清楚了，问题就解决了一大半。</p></li><li><p>理解对方难处。协作部门积极推进，很可能因为需要支持的工作很多，或者从他的角度来看这项工作不重要。不要急于打官腔，讲道理，先试着站在对方立场，理解对方的难处。首先理解对方的难处，才可能让对方你倾听你的需求。</p></li><li><p>需求区分优先级。如果所有事情都重要，就说明所有事情都不重要，如果所有事情都是紧急，就说明没有事情紧急。我们了解对方的处境、理解对方的难处，就是为了正确的表达自己的需求优先级，哪些是需要今天做的，哪些是本周，哪些事根本不急，如果空了顺手最，只有尊重对方的工作和时间才会获得别人的尊重。这一点是跨部门协作中最重要的一点，也完全体现了管理者的责任感和领导力。</p></li><li><p>心怀感恩，给予承诺。怀有感恩之心，无论这是否是份内的工作，也无论对方的动机是什么，只要对我提供了帮助，这人情我认，也会在力所能及的情况下进行回馈。</p></li></ol><p>其中最重要的是，第三点。问题中，“需要其他部门提供的支持常常被拖延”，这就是典型的错误表达，如果常常被拖延还没什么大影响，或者说明这项工作不重要，或者说明提出的需求就有问题。</p><p>二、过程跟踪推进</p><ol><li>异常处理，协同推进。约定好定期沟通进展，当出现异常，应该主动站出来协调资源，给予支持。</li><li>及时沟通，调整进度。当自己工作进度或优先级有调整时，应及时沟通协同部门，进行相应调整，保持同步。</li><li>分配工作，不分配责任。对方答应配合工作，不代表我们就可以当做把球扔出去，完全不需要管。要记住，锅还在我们身上。</li></ol><p>我们定期跟踪进度，协助调动资源，同步调整进度，最重要的如果因为各种各样的意外原因最终仍然没有完成任务，我们要站出来承担责任。肩膀硬一点，没有人会愿意和随时扔锅的人共事，别断了自己后路。</p><p>三、给予正向反馈</p><ol><li>过程中给予肯定。无论过程中我们付出多少努力，无论对方付出几分的努力，必须给予完全的认可。</li><li>在公开场合给予肯定。没和我一起共事的人无法评价，但是某某在我的这个项目确实展现了扎实的基本功和对工作的责任感。</li><li>在对方上司和公司高管面前给予肯定。这个项目能做好，某某同事的支持非常重要，其他人我不知道，但是某某确实沟通清晰，效率极高。</li></ol><p>之前在，初入职场的新人，什么行为或者话会让老员工反感？ 说：不要讲道理，要谈感情。</p><p>职场新人切忌耍小聪明，借势压人，盲目求全。知乎上只要你政治正确就无所畏惧，职场中你的出发点再好，做错事还是要挨骂挨罚，做错人还是要被记恨排挤。反之，如果自己多干点活不推工作，多吃点亏不怕担责，不端很高给人肯定，愿意帮你的人会越来越多。</p><p>职场中，有人的路会越走越宽，四处多是相助的贵人；有人的路会越走越窄，满眼都是挡路的高墙。</p><p>你的职场道路会怎么走呢？</p>]]></content>
     
     <summary type="html">
     
       
       
-        &lt;p&gt;Welcome to &lt;a href=&quot;https://hexo.io/&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;Hexo&lt;/a&gt;! This is your very first post. Check &lt;a href=&quot;https://hexo.
+        &lt;p&gt;转自: &lt;a href=&quot;https://zhuanlan.zhihu.com/p/27234918&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;https://zhuanlan.zhihu.com/p/27234918&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;三个关键步
       
     
     </summary>
