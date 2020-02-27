@@ -1,5 +1,5 @@
 https://www.wangjunfei.com/2020/02/26/%E4%B8%80%E8%87%B4%E6%80%A7%E7%AE%97%E6%B3%95%E7%A0%94%E7%A9%B6-%E4%B8%89-Kafka/
 https://www.wangjunfei.com/2020/02/26/%E4%B8%80%E8%87%B4%E6%80%A7%E7%AE%97%E6%B3%95%E7%A0%94%E7%A9%B6-%E4%BA%8C-ZooKeeper-ZAB%E5%8D%8F%E8%AE%AE/
+https://www.wangjunfei.com/2020/02/26/%E5%85%B1%E8%AF%86%E5%8D%8F%E8%AE%AE%E7%A0%94%E7%A9%B6-%E4%BA%8C-ZooKeeper-ZAB%E5%8D%8F%E8%AE%AE/
 https://www.wangjunfei.com/2020/02/26/%E4%B8%80%E8%87%B4%E6%80%A7%E7%AE%97%E6%B3%95%E7%A0%94%E7%A9%B6-%E4%B8%80-Paxos/
 https://www.wangjunfei.com/2019/11/22/%E5%AD%A6%E6%B8%A3%E5%92%8C%E5%AD%A6%E9%9C%B8%E7%9A%84%E5%8C%BA%E5%88%AB/
-https://www.wangjunfei.com/2019/11/18/%E8%B7%A8%E9%83%A8%E9%97%A8%E5%8D%8F%E4%BD%9C/
