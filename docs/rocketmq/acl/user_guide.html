@@ -1,0 +1,296 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description" content="王军飞的博客"><title> | 王军飞的随笔</title><link rel="stylesheet" type="text/css" href="/css/style.css?v=0.0.0"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/normalize/8.0.1/normalize.min.css"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/pure/1.0.0/pure-min.css"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/pure/1.0.0/grids-responsive-min.css"><link rel="stylesheet" href="//lib.baomitu.com/font-awesome/4.7.0/css/font-awesome.min.css"><script type="text/javascript" src="//lib.baomitu.com/jquery/3.4.0/jquery.min.js"></script><link rel="icon" mask="" sizes="any" href="/favicon.ico"><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="apple-touch-icon-precomposed" href="/apple-touch-icon.png"><!-- if config.feed--><!--   link(rel='alternate', type=feed_type, href=url_for(config.feed.path))--><meta name="generator" content="Hexo 4.0.0"><link rel="alternate" href="/atom.xml" title="王军飞的随笔" type="application/atom+xml">
+</head><body><div class="body_container"><div id="header"><div class="site-name"><h1 class="hidden">王军飞的随笔</h1><a id="logo" href="/.">王军飞的随笔</a><p class="description">always be the best</p></div><div id="nav-menu"><a href="/."><i class="fa fa-home"> 首页</i></a><a href="/archives/"><i class="fa fa-archive"> 归档</i></a><a href="/about-me/"><i class="fa fa-user"> 关于我</i></a><a href="/atom.xml"><i class="fa fa-rss"> 订阅</i></a></div></div><div class="pure-g" id="layout"><div class="pure-u-1 pure-u-md-3-4"><div class="content_container"><div class="post"><h1 class="post-title"></h1><div class="post-content"><h1 id="权限控制"><a href="#权限控制" class="headerlink" title="权限控制"></a>权限控制</h1><hr>
+<h2 id="1-权限控制特性介绍"><a href="#1-权限控制特性介绍" class="headerlink" title="1.权限控制特性介绍"></a>1.权限控制特性介绍</h2><p>权限控制（ACL）主要为RocketMQ提供Topic资源级别的用户访问控制。用户在使用RocketMQ权限控制时，可以在Client客户端通过 RPCHook注入AccessKey和SecretKey签名；同时，将对应的权限控制属性（包括Topic访问权限、IP白名单和AccessKey和SecretKey签名等）设置在distribution/conf/plain_acl.yml的配置文件中。Broker端对AccessKey所拥有的权限进行校验，校验不过，抛出异常；<br>ACL客户端可以参考：<strong>org.apache.rocketmq.example.simple</strong>包下面的<strong>AclClient</strong>代码。</p>
+<h2 id="2-权限控制的定义与属性值"><a href="#2-权限控制的定义与属性值" class="headerlink" title="2. 权限控制的定义与属性值"></a>2. 权限控制的定义与属性值</h2><h3 id="2-1权限定义"><a href="#2-1权限定义" class="headerlink" title="2.1权限定义"></a>2.1权限定义</h3><p>对RocketMQ的Topic资源访问权限控制定义主要如下表所示，分为以下四种</p>
+<table>
+<thead>
+<tr>
+<th>权限</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>DENY</td>
+<td>拒绝</td>
+</tr>
+<tr>
+<td>ANY</td>
+<td>PUB 或者 SUB 权限</td>
+</tr>
+<tr>
+<td>PUB</td>
+<td>发送权限</td>
+</tr>
+<tr>
+<td>SUB</td>
+<td>订阅权限</td>
+</tr>
+</tbody></table>
+<h3 id="2-2-权限定义的关键属性"><a href="#2-2-权限定义的关键属性" class="headerlink" title="2.2 权限定义的关键属性"></a>2.2 权限定义的关键属性</h3><table>
+<thead>
+<tr>
+<th>字段</th>
+<th>取值</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>globalWhiteRemoteAddresses</td>
+<td>*;192.168.*.*;192.168.0.1</td>
+<td>全局IP白名单</td>
+</tr>
+<tr>
+<td>accessKey</td>
+<td>字符串</td>
+<td>Access Key</td>
+</tr>
+<tr>
+<td>secretKey</td>
+<td>字符串</td>
+<td>Secret Key</td>
+</tr>
+<tr>
+<td>whiteRemoteAddress</td>
+<td>*;192.168.*.*;192.168.0.1</td>
+<td>用户IP白名单</td>
+</tr>
+<tr>
+<td>admin</td>
+<td>true;false</td>
+<td>是否管理员账户</td>
+</tr>
+<tr>
+<td>defaultTopicPerm</td>
+<td>DENY;PUB;SUB;PUB|SUB</td>
+<td>默认的Topic权限</td>
+</tr>
+<tr>
+<td>defaultGroupPerm</td>
+<td>DENY;PUB;SUB;PUB|SUB</td>
+<td>默认的ConsumerGroup权限</td>
+</tr>
+<tr>
+<td>topicPerms</td>
+<td>topic=权限</td>
+<td>各个Topic的权限</td>
+</tr>
+<tr>
+<td>groupPerms</td>
+<td>group=权限</td>
+<td>各个ConsumerGroup的权限</td>
+</tr>
+</tbody></table>
+<p>具体可以参考<strong>distribution/conf/plain_acl.yml</strong>配置文件</p>
+<h2 id="3-支持权限控制的集群部署"><a href="#3-支持权限控制的集群部署" class="headerlink" title="3. 支持权限控制的集群部署"></a>3. 支持权限控制的集群部署</h2><p>在<strong>distribution/conf/plain_acl.yml</strong>配置文件中按照上述说明定义好权限属性后，打开<strong>aclEnable</strong>开关变量即可开启RocketMQ集群的ACL特性。这里贴出Broker端开启ACL特性的properties配置文件内容：</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">brokerClusterName</span>=DefaultCluster</span><br><span class="line"><span class="attr">brokerName</span>=broker-a</span><br><span class="line"><span class="attr">brokerId</span>=<span class="number">0</span></span><br><span class="line"><span class="attr">deleteWhen</span>=<span class="number">04</span></span><br><span class="line"><span class="attr">fileReservedTime</span>=<span class="number">48</span></span><br><span class="line"><span class="attr">brokerRole</span>=ASYNC_MASTER</span><br><span class="line"><span class="attr">flushDiskType</span>=ASYNC_FLUSH</span><br><span class="line"><span class="attr">storePathRootDir</span>=/data/rocketmq/rootdir-a-m</span><br><span class="line"><span class="attr">storePathCommitLog</span>=/data/rocketmq/commitlog-a-m</span><br><span class="line"><span class="attr">autoCreateSubscriptionGroup</span>=<span class="literal">true</span></span><br><span class="line"><span class="comment">## if acl is open,the flag will be true</span></span><br><span class="line"><span class="attr">aclEnable</span>=<span class="literal">true</span></span><br><span class="line"><span class="attr">listenPort</span>=<span class="number">10911</span></span><br><span class="line"><span class="attr">brokerIP1</span>=XX.XX.XX.XX1</span><br><span class="line"><span class="attr">namesrvAddr</span>=XX.XX.XX.XX:<span class="number">9876</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="4-权限控制主要流程"><a href="#4-权限控制主要流程" class="headerlink" title="4. 权限控制主要流程"></a>4. 权限控制主要流程</h2><p>ACL主要流程分为两部分，主要包括权限解析和权限校验。</p>
+<h3 id="4-1-权限解析"><a href="#4-1-权限解析" class="headerlink" title="4.1 权限解析"></a>4.1 权限解析</h3><p>Broker端对客户端的RequestCommand请求进行解析，拿到需要鉴权的属性字段。<br>主要包括：<br>（1）AccessKey：类似于用户名，代指用户主体，权限数据与之对应；<br>（2）Signature：客户根据 SecretKey 签名得到的串，服务端再用SecretKey进行签名验证；</p>
+<h3 id="4-2-权限校验"><a href="#4-2-权限校验" class="headerlink" title="4.2 权限校验"></a>4.2 权限校验</h3><p>Broker端对权限的校验逻辑主要分为以下几步：<br>（1）检查是否命中全局 IP 白名单；如果是，则认为校验通过；否则走 2；<br>（2）检查是否命中用户 IP 白名单；如果是，则认为校验通过；否则走 3；<br>（3）校验签名，校验不通过，抛出异常；校验通过，则走 4；<br>（4）对用户请求所需的权限 和 用户所拥有的权限进行校验；不通过，抛出异常；<br>用户所需权限的校验需要注意已下内容：<br>（1）特殊的请求例如 UPDATE_AND_CREATE_TOPIC 等，只能由 admin 账户进行操作；<br>（2）对于某个资源，如果有显性配置权限，则采用配置的权限；如果没有显性配置权限，则采用默认的权限；</p>
+<h2 id="5-热加载修改后权限控制定义"><a href="#5-热加载修改后权限控制定义" class="headerlink" title="5. 热加载修改后权限控制定义"></a>5. 热加载修改后权限控制定义</h2><p>RocketMQ的权限控制存储的默认实现是基于yml配置文件。用户可以动态修改权限控制定义的属性，而不需重新启动Broker服务节点。</p>
+<h2 id="6-权限控制的使用限制"><a href="#6-权限控制的使用限制" class="headerlink" title="6. 权限控制的使用限制"></a>6. 权限控制的使用限制</h2><p>(1)如果ACL与高可用部署(Master/Slave架构)同时启用，那么需要在Broker Master节点的distribution/conf/plain_acl.yml配置文件中<br>设置全局白名单信息，即为将Slave节点的ip地址设置至Master节点plain_acl.yml配置文件的全局白名单中。</p>
+<p>(2)如果ACL与高可用部署(多副本Dledger架构)同时启用，由于出现节点宕机时，Dledger Group组内会自动选主，那么就需要将Dledger Group组<br>内所有Broker节点的plain_acl.yml配置文件的白名单设置所有Broker节点的ip地址。</p>
+<h2 id="7-ACL-mqadmin配置管理命令"><a href="#7-ACL-mqadmin配置管理命令" class="headerlink" title="7. ACL mqadmin配置管理命令"></a>7. ACL mqadmin配置管理命令</h2><h3 id="7-1-更新ACL配置文件中“account”的属性值"><a href="#7-1-更新ACL配置文件中“account”的属性值" class="headerlink" title="7.1 更新ACL配置文件中“account”的属性值"></a>7.1 更新ACL配置文件中“account”的属性值</h3><p>该命令的示例如下：</p>
+<p>sh mqadmin updateAclConfig -n 192.168.1.2:9876 -b 192.168.12.134:10911 -a RocketMQ -s 1234567809123<br>-t topicA=DENY,topicD=SUB -g groupD=DENY,groupB=SUB</p>
+<p>说明：如果不存在则会在ACL Config YAML配置文件中创建；若存在，则会更新对应的“accounts”的属性值;<br>如果指定的是集群名称，则会在集群中各个broker节点执行该命令；否则会在单个broker节点执行该命令。</p>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>取值</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>n</td>
+<td>eg:192.168.1.2:9876</td>
+<td>namesrv地址(必填)</td>
+</tr>
+<tr>
+<td>c</td>
+<td>eg:DefaultCluster</td>
+<td>指定集群名称(与broker地址二选一)</td>
+</tr>
+<tr>
+<td>b</td>
+<td>eg:192.168.12.134:10911</td>
+<td>指定broker地址(与集群名称二选一)</td>
+</tr>
+<tr>
+<td>a</td>
+<td>eg:RocketMQ</td>
+<td>Access Key值(必填)</td>
+</tr>
+<tr>
+<td>s</td>
+<td>eg:1234567809123</td>
+<td>Secret Key值(可选)</td>
+</tr>
+<tr>
+<td>m</td>
+<td>eg:true</td>
+<td>是否管理员账户(可选)</td>
+</tr>
+<tr>
+<td>w</td>
+<td>eg:192.168.0.*</td>
+<td>whiteRemoteAddress,用户IP白名单(可选)</td>
+</tr>
+<tr>
+<td>i</td>
+<td>eg:DENY;PUB;SUB;PUB|SUB</td>
+<td>defaultTopicPerm,默认Topic权限(可选)</td>
+</tr>
+<tr>
+<td>u</td>
+<td>eg:DENY;PUB;SUB;PUB|SUB</td>
+<td>defaultGroupPerm,默认ConsumerGroup权限(可选)</td>
+</tr>
+<tr>
+<td>t</td>
+<td>eg:topicA=DENY,topicD=SUB</td>
+<td>topicPerms,各个Topic的权限(可选)</td>
+</tr>
+<tr>
+<td>g</td>
+<td>eg:groupD=DENY,groupB=SUB</td>
+<td>groupPerms,各个ConsumerGroup的权限(可选)</td>
+</tr>
+</tbody></table>
+<h3 id="7-2-删除ACL配置文件里面的对应“account”"><a href="#7-2-删除ACL配置文件里面的对应“account”" class="headerlink" title="7.2 删除ACL配置文件里面的对应“account”"></a>7.2 删除ACL配置文件里面的对应“account”</h3><p>该命令的示例如下：</p>
+<p>sh mqadmin deleteAccessConfig -n 192.168.1.2:9876 -c DefaultCluster -a RocketMQ</p>
+<p>说明：如果指定的是集群名称，则会在集群中各个broker节点执行该命令；否则会在单个broker节点执行该命令。<br>其中，参数”a”为Access Key的值，用以标识唯一账户id，因此该命令的参数中指定账户id即可。</p>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>取值</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>n</td>
+<td>eg:192.168.1.2:9876</td>
+<td>namesrv地址(必填)</td>
+</tr>
+<tr>
+<td>c</td>
+<td>eg:DefaultCluster</td>
+<td>指定集群名称(与broker地址二选一)</td>
+</tr>
+<tr>
+<td>b</td>
+<td>eg:192.168.12.134:10911</td>
+<td>指定broker地址(与集群名称二选一)</td>
+</tr>
+<tr>
+<td>a</td>
+<td>eg:RocketMQ</td>
+<td>Access Key的值(必填)</td>
+</tr>
+</tbody></table>
+<h3 id="7-3-更新ACL配置文件里面中的全局白名单"><a href="#7-3-更新ACL配置文件里面中的全局白名单" class="headerlink" title="7.3 更新ACL配置文件里面中的全局白名单"></a>7.3 更新ACL配置文件里面中的全局白名单</h3><p>该命令的示例如下：</p>
+<p>sh mqadmin updateGlobalWhiteAddr -n 192.168.1.2:9876 -b 192.168.12.134:10911 -g 10.10.154.1,10.10.154.2</p>
+<p>说明：如果指定的是集群名称，则会在集群中各个broker节点执行该命令；否则会在单个broker节点执行该命令。<br>其中，参数”g”为全局IP白名的值，用以更新ACL配置文件中的“globalWhiteRemoteAddresses”字段的属性值。</p>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>取值</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>n</td>
+<td>eg:192.168.1.2:9876</td>
+<td>namesrv地址(必填)</td>
+</tr>
+<tr>
+<td>c</td>
+<td>eg:DefaultCluster</td>
+<td>指定集群名称(与broker地址二选一)</td>
+</tr>
+<tr>
+<td>b</td>
+<td>eg:192.168.12.134:10911</td>
+<td>指定broker地址(与集群名称二选一)</td>
+</tr>
+<tr>
+<td>g</td>
+<td>eg:10.10.154.1,10.10.154.2</td>
+<td>全局IP白名单(必填)</td>
+</tr>
+</tbody></table>
+<h3 id="7-4-查询集群-Broker的ACL配置文件版本信息"><a href="#7-4-查询集群-Broker的ACL配置文件版本信息" class="headerlink" title="7.4 查询集群/Broker的ACL配置文件版本信息"></a>7.4 查询集群/Broker的ACL配置文件版本信息</h3><p>该命令的示例如下：</p>
+<p>sh mqadmin clusterAclConfigVersion -n 192.168.1.2:9876 -c DefaultCluster</p>
+<p>说明：如果指定的是集群名称，则会在集群中各个broker节点执行该命令；否则会在单个broker节点执行该命令。</p>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>取值</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>n</td>
+<td>eg:192.168.1.2:9876</td>
+<td>namesrv地址(必填)</td>
+</tr>
+<tr>
+<td>c</td>
+<td>eg:DefaultCluster</td>
+<td>指定集群名称(与broker地址二选一)</td>
+</tr>
+<tr>
+<td>b</td>
+<td>eg:192.168.12.134:10911</td>
+<td>指定broker地址(与集群名称二选一)</td>
+</tr>
+</tbody></table>
+<h3 id="7-5-查询集群-Broker的ACL配置文件全部内容"><a href="#7-5-查询集群-Broker的ACL配置文件全部内容" class="headerlink" title="7.5 查询集群/Broker的ACL配置文件全部内容"></a>7.5 查询集群/Broker的ACL配置文件全部内容</h3><p>该命令的示例如下：</p>
+<p>sh mqadmin getAccessConfigSubCommand -n 192.168.1.2:9876 -c DefaultCluster</p>
+<p>说明：如果指定的是集群名称，则会在集群中各个broker节点执行该命令；否则会在单个broker节点执行该命令。</p>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>取值</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>n</td>
+<td>eg:192.168.1.2:9876</td>
+<td>namesrv地址(必填)</td>
+</tr>
+<tr>
+<td>c</td>
+<td>eg:DefaultCluster</td>
+<td>指定集群名称(与broker地址二选一)</td>
+</tr>
+<tr>
+<td>b</td>
+<td>eg:192.168.12.134:10911</td>
+<td>指定broker地址(与集群名称二选一)</td>
+</tr>
+</tbody></table>
+<p><strong>特别注意</strong>开启Acl鉴权认证后导致Master/Slave和Dledger模式下Broker同步数据异常的问题，<br>在社区[4.5.1]版本中已经修复，具体的PR链接为：<a href="https://github.com/apache/rocketmq/pull/1149；" target="_blank" rel="noopener">https://github.com/apache/rocketmq/pull/1149；</a></p>
+</div></div><div id="vcomment"></div><script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script><script src="//unpkg.com/valine@latest/dist/Valine.min.js"></script><script>var notify = 'false' ? true : false;
+var verify = 'true' ? true : false;
+var GUEST_INFO = ['nick','mail','link'];
+var guest_info = 'nick,mail,link'.split(',').filter(function(item){
+  return GUEST_INFO.indexOf(item) > -1
+});
+guest_info = guest_info.length == 0 ? GUEST_INFO :guest_info;
+window.valine = new Valine({
+  el:'#vcomment',
+  notify:notify,
+  verify:verify,
+  appId:'FNjCNRwQqC3sTPP04DfRFIk9-gzGzoHsz',
+  appKey:'LzCq5t6a6RTkwXQVr8xLk0yj',
+  placeholder:'请理性评论',
+  avatar:'monsterid',
+  guest_info:guest_info,
+  pageSize:'10'
+})</script></div></div><div class="pure-u-1-4 hidden_mid_and_down"><div id="sidebar"><div class="widget"><form class="search-form" action="//www.baidu.com/baidu" method="get" accept-charset="utf-8" target="_blank"><input type="search" name="word" maxlength="20" placeholder="Search"/><input type="hidden" name="si" value="https://www.wangjunfei.com"/><input name="tn" type="hidden" value="bds"/><input name="cl" type="hidden" value="3"/><input name="ct" type="hidden" value="2097152"/><input name="s" type="hidden" value="on"/></form></div><div class="widget"><div class="widget-title"><i class="fa fa-folder-o"> 分类</i></div><ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%88%86%E5%B8%83%E5%BC%8F%E6%8A%80%E6%9C%AF/">分布式技术</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%8A%A1%E8%99%9A/">务虚</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97/">消息队列</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E7%A3%81%E7%9B%98%E8%AF%BB%E5%86%99%E4%BC%98%E5%8C%96/">磁盘读写优化</a><span class="category-list-count">1</span></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-star-o"> 标签</i></div><div class="tagcloud"><a href="/tags/rocketmq/" style="font-size: 15px;">rocketmq</a> <a href="/tags/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97/" style="font-size: 15px;">消息队列</a> <a href="/tags/kafka/" style="font-size: 15px;">kafka</a> <a href="/tags/zookeeper/" style="font-size: 15px;">zookeeper</a> <a href="/tags/consensus-algorithm/" style="font-size: 15px;">consensus algorithm</a> <a href="/tags/zab/" style="font-size: 15px;">zab</a> <a href="/tags/%E4%B8%80%E8%87%B4%E6%80%A7%E7%AE%97%E6%B3%95/" style="font-size: 15px;">一致性算法</a> <a href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F%E5%8D%8F%E8%AE%AE/" style="font-size: 15px;">分布式协议</a> <a href="/tags/%E5%8D%8F%E4%BD%9C/" style="font-size: 15px;">协作</a> <a href="/tags/%E8%BD%AF%E7%B4%A0%E8%B4%A8/" style="font-size: 15px;">软素质</a> <a href="/tags/mysql/" style="font-size: 15px;">mysql</a> <a href="/tags/%E7%A3%81%E7%9B%98%E8%AF%BB%E5%86%99%E4%BC%98%E5%8C%96/" style="font-size: 15px;">磁盘读写优化</a></div></div><div class="widget"><div class="widget-title"><i class="fa fa-file-o"> 最近文章</i></div><ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2020/04/28/Mafka%E5%AF%B9%E6%AF%94RocketMQ-%E4%B8%80-%E7%AE%80%E4%BB%8B/">Mafka对比RocketMQ(一)简介</a></li><li class="post-list-item"><a class="post-list-link" href="/2020/04/28/RocketMQ%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97-%E6%9E%B6%E6%9E%84/">RocketMQ消息队列(一)架构</a></li><li class="post-list-item"><a class="post-list-link" href="/2020/03/15/%E7%A3%81%E7%9B%98%E8%AF%BB%E5%86%99%E4%BC%98%E5%8C%96%E6%8A%80%E6%9C%AF%E7%A0%94%E7%A9%B6-Zookeeper-Kafka-MySQL/">磁盘读写优化技术研究-Zookeeper/Kafka/MySQL</a></li><li class="post-list-item"><a class="post-list-link" href="/2020/02/26/%E4%B8%80%E8%87%B4%E6%80%A7%E7%AE%97%E6%B3%95%E7%A0%94%E7%A9%B6-%E4%B8%89-Kafka/">一致性算法研究(三)Kafka</a></li><li class="post-list-item"><a class="post-list-link" href="/2020/02/26/%E4%B8%80%E8%87%B4%E6%80%A7%E7%AE%97%E6%B3%95%E7%A0%94%E7%A9%B6-%E4%BA%8C-ZooKeeper-ZAB%E5%8D%8F%E8%AE%AE/">一致性算法研究(二)ZooKeeper ZAB协议</a></li><li class="post-list-item"><a class="post-list-link" href="/2020/02/26/%E4%B8%80%E8%87%B4%E6%80%A7%E7%AE%97%E6%B3%95%E7%A0%94%E7%A9%B6-%E4%B8%80-Paxos/">一致性算法研究(一)Paxos</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/11/22/%E5%AD%A6%E6%B8%A3%E5%92%8C%E5%AD%A6%E9%9C%B8%E7%9A%84%E5%8C%BA%E5%88%AB/">【转】学渣和学霸的区别</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/11/18/%E8%B7%A8%E9%83%A8%E9%97%A8%E5%8D%8F%E4%BD%9C/">【转】跨部门协作</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-external-link"> 友情链接</i></div><ul></ul><a href="http://www.example1.com/" title="site-name1" target="_blank">site-name1</a></div></div></div><div class="pure-u-1 pure-u-md-3-4"><div id="footer">Copyright © 2020 <a href="/." rel="nofollow">王军飞的随笔.</a> Powered by<a rel="nofollow" target="_blank" href="https://hexo.io"> Hexo.</a><a rel="nofollow" target="_blank" href="https://github.com/tufu9441/maupassant-hexo"> Theme</a> by<a rel="nofollow" target="_blank" href="https://github.com/pagecho"> Cho.</a></div></div></div><a class="show" id="rocket" href="#top"></a><script type="text/javascript" src="/js/totop.js?v=0.0.0" async></script><script type="text/javascript" src="//lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js" async></script><script type="text/javascript" src="/js/fancybox.js?v=0.0.0" async></script><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css"><script type="text/javascript" src="/js/codeblock-resizer.js?v=0.0.0"></script><script type="text/javascript" src="/js/smartresize.js?v=0.0.0"></script></div></body></html>

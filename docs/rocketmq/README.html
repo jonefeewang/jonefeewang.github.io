@@ -1,0 +1,52 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description" content="王军飞的博客"><title> | 王军飞的随笔</title><link rel="stylesheet" type="text/css" href="/css/style.css?v=0.0.0"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/normalize/8.0.1/normalize.min.css"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/pure/1.0.0/pure-min.css"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/pure/1.0.0/grids-responsive-min.css"><link rel="stylesheet" href="//lib.baomitu.com/font-awesome/4.7.0/css/font-awesome.min.css"><script type="text/javascript" src="//lib.baomitu.com/jquery/3.4.0/jquery.min.js"></script><link rel="icon" mask="" sizes="any" href="/favicon.ico"><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="apple-touch-icon-precomposed" href="/apple-touch-icon.png"><!-- if config.feed--><!--   link(rel='alternate', type=feed_type, href=url_for(config.feed.path))--><meta name="generator" content="Hexo 4.0.0"><link rel="alternate" href="/atom.xml" title="王军飞的随笔" type="application/atom+xml">
+</head><body><div class="body_container"><div id="header"><div class="site-name"><h1 class="hidden">王军飞的随笔</h1><a id="logo" href="/.">王军飞的随笔</a><p class="description">always be the best</p></div><div id="nav-menu"><a href="/."><i class="fa fa-home"> 首页</i></a><a href="/archives/"><i class="fa fa-archive"> 归档</i></a><a href="/about-me/"><i class="fa fa-user"> 关于我</i></a><a href="/atom.xml"><i class="fa fa-rss"> 订阅</i></a></div></div><div class="pure-g" id="layout"><div class="pure-u-1 pure-u-md-3-4"><div class="content_container"><div class="post"><h1 class="post-title"></h1><div class="post-content"><h2 id="Apache-RocketMQ开发者指南"><a href="#Apache-RocketMQ开发者指南" class="headerlink" title="Apache RocketMQ开发者指南"></a>Apache RocketMQ开发者指南</h2><h5 id="这个开发者指南是帮助您快速了解-并使用-Apache-RocketMQ"><a href="#这个开发者指南是帮助您快速了解-并使用-Apache-RocketMQ" class="headerlink" title="这个开发者指南是帮助您快速了解,并使用 Apache RocketMQ"></a>这个开发者指南是帮助您快速了解,并使用 Apache RocketMQ</h5><h3 id="1-概念和特性"><a href="#1-概念和特性" class="headerlink" title="1. 概念和特性"></a>1. 概念和特性</h3><ul>
+<li><p><a href="concept.md">概念(Concept)</a>：介绍RocketMQ的基本概念模型。</p>
+</li>
+<li><p><a href="features.md">特性(Features)</a>：介绍RocketMQ实现的功能特性。 </p>
+</li>
+</ul>
+<h3 id="2-架构设计"><a href="#2-架构设计" class="headerlink" title="2. 架构设计"></a>2. 架构设计</h3><ul>
+<li><p><a href="architecture.md">架构(Architecture)</a>：介绍RocketMQ部署架构和技术架构。</p>
+</li>
+<li><p><a href="design.md">设计(Design)</a>：介绍RocketMQ关键机制的设计原理，主要包括消息存储、通信机制、消息过滤、负载均衡、事务消息等。</p>
+</li>
+</ul>
+<h3 id="3-样例"><a href="#3-样例" class="headerlink" title="3. 样例"></a>3. 样例</h3><ul>
+<li><a href="RocketMQ_Example.md">样例(Example)</a> ：介绍RocketMQ的常见用法，包括基本样例、顺序消息样例、延时消息样例、批量消息样例、过滤消息样例、事务消息样例等。</li>
+</ul>
+<h3 id="4-最佳实践"><a href="#4-最佳实践" class="headerlink" title="4. 最佳实践"></a>4. 最佳实践</h3><ul>
+<li><p><a href="best_practice.md">最佳实践（Best Practice）</a>：介绍RocketMQ的最佳实践，包括生产者、消费者、Broker以及NameServer的最佳实践，客户端的配置方式以及JVM和linux的最佳参数配置。</p>
+</li>
+<li><p><a href="msg_trace/user_guide.md">消息轨迹指南(Message Trace)</a>：介绍RocketMQ消息轨迹的使用方法。</p>
+</li>
+<li><p><a href="acl/user_guide.md">权限管理(Auth Management)</a>：介绍如何快速部署和使用支持权限控制特性的RocketMQ集群。</p>
+</li>
+<li><p><a href="dledger/quick_start.md">Dledger快速搭建(Quick Start)</a>：介绍Dledger的快速搭建方法。</p>
+</li>
+<li><p><a href="dledger/deploy_guide.md">集群部署(Cluster Deployment)</a>：介绍Dledger的集群部署方式。</p>
+</li>
+</ul>
+<h3 id="5-运维管理"><a href="#5-运维管理" class="headerlink" title="5. 运维管理"></a>5. 运维管理</h3><ul>
+<li><a href="operation.md">集群部署(Operation)</a>：介绍单Master模式、多Master模式、多Master多slave模式等RocketMQ集群各种形式的部署方法以及运维工具mqadmin的使用方式。</li>
+</ul>
+<h3 id="6-API-Reference（待补充）"><a href="#6-API-Reference（待补充）" class="headerlink" title="6. API Reference（待补充）"></a>6. API Reference（待补充）</h3><ul>
+<li><a href="client/java/API_Reference_DefaultMQProducer.md">DefaultMQProducer API Reference</a></li>
+</ul>
+</div></div><div id="vcomment"></div><script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script><script src="//unpkg.com/valine@latest/dist/Valine.min.js"></script><script>var notify = 'false' ? true : false;
+var verify = 'true' ? true : false;
+var GUEST_INFO = ['nick','mail','link'];
+var guest_info = 'nick,mail,link'.split(',').filter(function(item){
+  return GUEST_INFO.indexOf(item) > -1
+});
+guest_info = guest_info.length == 0 ? GUEST_INFO :guest_info;
+window.valine = new Valine({
+  el:'#vcomment',
+  notify:notify,
+  verify:verify,
+  appId:'FNjCNRwQqC3sTPP04DfRFIk9-gzGzoHsz',
+  appKey:'LzCq5t6a6RTkwXQVr8xLk0yj',
+  placeholder:'请理性评论',
+  avatar:'monsterid',
+  guest_info:guest_info,
+  pageSize:'10'
+})</script></div></div><div class="pure-u-1-4 hidden_mid_and_down"><div id="sidebar"><div class="widget"><form class="search-form" action="//www.baidu.com/baidu" method="get" accept-charset="utf-8" target="_blank"><input type="search" name="word" maxlength="20" placeholder="Search"/><input type="hidden" name="si" value="https://www.wangjunfei.com"/><input name="tn" type="hidden" value="bds"/><input name="cl" type="hidden" value="3"/><input name="ct" type="hidden" value="2097152"/><input name="s" type="hidden" value="on"/></form></div><div class="widget"><div class="widget-title"><i class="fa fa-folder-o"> 分类</i></div><ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%88%86%E5%B8%83%E5%BC%8F%E6%8A%80%E6%9C%AF/">分布式技术</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%8A%A1%E8%99%9A/">务虚</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97/">消息队列</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E7%A3%81%E7%9B%98%E8%AF%BB%E5%86%99%E4%BC%98%E5%8C%96/">磁盘读写优化</a><span class="category-list-count">1</span></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-star-o"> 标签</i></div><div class="tagcloud"><a href="/tags/rocketmq/" style="font-size: 15px;">rocketmq</a> <a href="/tags/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97/" style="font-size: 15px;">消息队列</a> <a href="/tags/kafka/" style="font-size: 15px;">kafka</a> <a href="/tags/zookeeper/" style="font-size: 15px;">zookeeper</a> <a href="/tags/consensus-algorithm/" style="font-size: 15px;">consensus algorithm</a> <a href="/tags/zab/" style="font-size: 15px;">zab</a> <a href="/tags/%E4%B8%80%E8%87%B4%E6%80%A7%E7%AE%97%E6%B3%95/" style="font-size: 15px;">一致性算法</a> <a href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F%E5%8D%8F%E8%AE%AE/" style="font-size: 15px;">分布式协议</a> <a href="/tags/%E5%8D%8F%E4%BD%9C/" style="font-size: 15px;">协作</a> <a href="/tags/%E8%BD%AF%E7%B4%A0%E8%B4%A8/" style="font-size: 15px;">软素质</a> <a href="/tags/mysql/" style="font-size: 15px;">mysql</a> <a href="/tags/%E7%A3%81%E7%9B%98%E8%AF%BB%E5%86%99%E4%BC%98%E5%8C%96/" style="font-size: 15px;">磁盘读写优化</a></div></div><div class="widget"><div class="widget-title"><i class="fa fa-file-o"> 最近文章</i></div><ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2020/04/28/Mafka%E5%AF%B9%E6%AF%94RocketMQ-%E4%B8%80-%E7%AE%80%E4%BB%8B/">Mafka对比RocketMQ(一)简介</a></li><li class="post-list-item"><a class="post-list-link" href="/2020/04/28/RocketMQ%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97-%E6%9E%B6%E6%9E%84/">RocketMQ消息队列(一)架构</a></li><li class="post-list-item"><a class="post-list-link" href="/2020/03/15/%E7%A3%81%E7%9B%98%E8%AF%BB%E5%86%99%E4%BC%98%E5%8C%96%E6%8A%80%E6%9C%AF%E7%A0%94%E7%A9%B6-Zookeeper-Kafka-MySQL/">磁盘读写优化技术研究-Zookeeper/Kafka/MySQL</a></li><li class="post-list-item"><a class="post-list-link" href="/2020/02/26/%E4%B8%80%E8%87%B4%E6%80%A7%E7%AE%97%E6%B3%95%E7%A0%94%E7%A9%B6-%E4%B8%89-Kafka/">一致性算法研究(三)Kafka</a></li><li class="post-list-item"><a class="post-list-link" href="/2020/02/26/%E4%B8%80%E8%87%B4%E6%80%A7%E7%AE%97%E6%B3%95%E7%A0%94%E7%A9%B6-%E4%BA%8C-ZooKeeper-ZAB%E5%8D%8F%E8%AE%AE/">一致性算法研究(二)ZooKeeper ZAB协议</a></li><li class="post-list-item"><a class="post-list-link" href="/2020/02/26/%E4%B8%80%E8%87%B4%E6%80%A7%E7%AE%97%E6%B3%95%E7%A0%94%E7%A9%B6-%E4%B8%80-Paxos/">一致性算法研究(一)Paxos</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/11/22/%E5%AD%A6%E6%B8%A3%E5%92%8C%E5%AD%A6%E9%9C%B8%E7%9A%84%E5%8C%BA%E5%88%AB/">【转】学渣和学霸的区别</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/11/18/%E8%B7%A8%E9%83%A8%E9%97%A8%E5%8D%8F%E4%BD%9C/">【转】跨部门协作</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-external-link"> 友情链接</i></div><ul></ul><a href="http://www.example1.com/" title="site-name1" target="_blank">site-name1</a></div></div></div><div class="pure-u-1 pure-u-md-3-4"><div id="footer">Copyright © 2020 <a href="/." rel="nofollow">王军飞的随笔.</a> Powered by<a rel="nofollow" target="_blank" href="https://hexo.io"> Hexo.</a><a rel="nofollow" target="_blank" href="https://github.com/tufu9441/maupassant-hexo"> Theme</a> by<a rel="nofollow" target="_blank" href="https://github.com/pagecho"> Cho.</a></div></div></div><a class="show" id="rocket" href="#top"></a><script type="text/javascript" src="/js/totop.js?v=0.0.0" async></script><script type="text/javascript" src="//lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js" async></script><script type="text/javascript" src="/js/fancybox.js?v=0.0.0" async></script><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css"><script type="text/javascript" src="/js/codeblock-resizer.js?v=0.0.0"></script><script type="text/javascript" src="/js/smartresize.js?v=0.0.0"></script></div></body></html>

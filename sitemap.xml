@@ -2,9 +2,121 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://www.wangjunfei.com/2020/04/28/RocketMQ%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97-%E6%9E%B6%E6%9E%84/</loc>
+    
+    <lastmod>2020-04-28T10:52:23.621Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://www.wangjunfei.com/about-me/index.html</loc>
     
-    <lastmod>2020-03-15T02:40:25.836Z</lastmod>
+    <lastmod>2020-04-28T10:50:09.855Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://www.wangjunfei.com/2020/04/28/Mafka%E5%AF%B9%E6%AF%94RocketMQ-%E4%B8%80-%E7%AE%80%E4%BB%8B/</loc>
+    
+    <lastmod>2020-04-28T10:48:15.570Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://www.wangjunfei.com/docs/index.html</loc>
+    
+    <lastmod>2020-03-25T05:26:57.842Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://www.wangjunfei.com/docs/rocketmq/operation.html</loc>
+    
+    <lastmod>2020-03-21T09:23:31.573Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://www.wangjunfei.com/docs/rocketmq/msg_trace/user_guide.html</loc>
+    
+    <lastmod>2020-03-21T09:23:31.573Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://www.wangjunfei.com/docs/rocketmq/features.html</loc>
+    
+    <lastmod>2020-03-21T09:23:31.563Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://www.wangjunfei.com/docs/rocketmq/dledger/deploy_guide.html</loc>
+    
+    <lastmod>2020-03-21T09:23:31.563Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://www.wangjunfei.com/docs/rocketmq/dledger/quick_start.html</loc>
+    
+    <lastmod>2020-03-21T09:23:31.563Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://www.wangjunfei.com/docs/rocketmq/design.html</loc>
+    
+    <lastmod>2020-03-21T09:23:31.562Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://www.wangjunfei.com/docs/rocketmq/concept.html</loc>
+    
+    <lastmod>2020-03-21T09:23:31.562Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://www.wangjunfei.com/docs/rocketmq/client/java/API_Reference_DefaultMQProducer.html</loc>
+    
+    <lastmod>2020-03-21T09:23:31.562Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://www.wangjunfei.com/docs/rocketmq/RocketMQ_Example.html</loc>
+    
+    <lastmod>2020-03-21T09:23:31.561Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://www.wangjunfei.com/docs/rocketmq/best_practice.html</loc>
+    
+    <lastmod>2020-03-21T09:23:31.561Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://www.wangjunfei.com/docs/rocketmq/architecture.html</loc>
+    
+    <lastmod>2020-03-21T09:23:31.561Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://www.wangjunfei.com/docs/rocketmq/acl/user_guide.html</loc>
+    
+    <lastmod>2020-03-21T09:23:31.561Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://www.wangjunfei.com/docs/rocketmq/README.html</loc>
+    
+    <lastmod>2020-03-21T09:23:31.560Z</lastmod>
     
   </url>
   

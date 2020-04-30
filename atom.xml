@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://www.wangjunfei.com/"/>
-  <updated>2020-03-15T02:37:16.160Z</updated>
+  <updated>2020-04-28T10:48:15.570Z</updated>
   <id>https://www.wangjunfei.com/</id>
   
   <author>
@@ -15,6 +15,60 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Mafka对比RocketMQ(一)简介</title>
+    <link href="https://www.wangjunfei.com/2020/04/28/Mafka%E5%AF%B9%E6%AF%94RocketMQ-%E4%B8%80-%E7%AE%80%E4%BB%8B/"/>
+    <id>https://www.wangjunfei.com/2020/04/28/Mafka%E5%AF%B9%E6%AF%94RocketMQ-%E4%B8%80-%E7%AE%80%E4%BB%8B/</id>
+    <published>2020-04-28T10:10:16.000Z</published>
+    <updated>2020-04-28T10:48:15.570Z</updated>
+    
+    <content type="html"><![CDATA[<h2 id="Mafka简介"><a href="#Mafka简介" class="headerlink" title="Mafka简介"></a>Mafka简介</h2><h3 id="什么是Mafka"><a href="#什么是Mafka" class="headerlink" title="什么是Mafka?"></a>什么是Mafka?</h3><p>Mafka是基础架构-MQ团队从2016年开始自研的消息队列产品，底层基于Apache Kafka，增加了自研的基于机房粒度的中心化调度、时间回溯、粘性分配、死信、延迟队列、适用于美团自用的同步/异步客户端、机房容灾等高阶特性，目前版本是3.0。</p><h3 id="为什么建造Mafka"><a href="#为什么建造Mafka" class="headerlink" title="为什么建造Mafka?"></a>为什么建造Mafka?</h3><p>消息队列是现代互联网技术架构中不可缺少的一个基础组件，对于美团这样的业务多样性的大型互联网公司来说，这个组件尤其变得更为重要。2016年Mafka诞生之前，美团拥有自研的消息队列产品Nuclear MQ和Swallow，但是随着公司业务的不断扩大，业务线对消息队列功能多样性，以及可用性，可靠性，高并发能力的要求越来越高，原有队列产品的局限性和先天不足劣势迅速暴露出来。正是在这样紧迫形势下，MQ团队经过深入调研和分析，发现原有产品的基础技术架构已无法满足用户需求，决定基于开源社区比较成熟的消息队列产品Apache Kafka研发打造适用于美团的消息队列产品，Mafka就这样诞生了。</p><p>Apache Kafka诞生于同样是互联网公司的LinkedIn，经过企业级互联网产品的实战检验，拥有优秀的技术架构和设计。但Kafka的定位是作为Apache基金会下一个开源的消息队列产品，其功能和设计演进完全是集所有公司和用户需求的基础共性为重点的，涉及到具体某个公司的个性化或特定环境下的需求和演进，并不是他演进的方向。所以直接拿Kafka来部署，作为美团的企业级消息队列产品是没法使用的。所以，MQ团队对Kafka做了深度的定制和自研，来满足美团的业务场景。为了区分开源产品Apache Kafka和经过MQ团队改造后的Kafka，MQ团队将后者命名为Mafka。</p><p>Mafka 基于Kafka 0.9.0.1版本研发，至今已迭代了3个版本(第四个版本正在迭代中)。开源Kafka只有Broker和clientSDK两个模块，实际真正使用到美团这样的多样性大型互联网O2O公司内，其原生设计已经远远满足不了业务的功能需求以及企业级产品标准。Mafka除了对Kafka原有的Broker和java clientSDK两个模块做了深度自研和定制外，还增加了Castle、延时队列、Push消费组、Mafka Scanner、Auth队列鉴权、全模块自动测试系统、c++/php客户端、用户平台、运营平台等9个模块的系统支持。其中，仅仅是Broker模块，新增代码将近4万行，删除代码近9000行，涉及800多次提交。整个Mafka 系统新增代码量数十万行。</p><h3 id="Mafka架构图"><a href="#Mafka架构图" class="headerlink" title="Mafka架构图"></a>Mafka架构图</h3><div style="zoom:80%"> <img src="/2020/04/28/Mafka%E5%AF%B9%E6%AF%94RocketMQ-%E4%B8%80-%E7%AE%80%E4%BB%8B/mafka_arch.svg" class title="Mafka架构图"> </div><h2 id="RocketMQ简介"><a href="#RocketMQ简介" class="headerlink" title="RocketMQ简介"></a>RocketMQ简介</h2><h3 id="rocket演进历史"><a href="#rocket演进历史" class="headerlink" title="rocket演进历史"></a>rocket演进历史</h3><div style="zoom:80%"> <img src="/2020/04/28/Mafka%E5%AF%B9%E6%AF%94RocketMQ-%E4%B8%80-%E7%AE%80%E4%BB%8B/rocketmq_iter.png" class title="rocketmq演进历史"> </div><blockquote><p>2007年，淘宝实施了“五彩石”项目，将交易系统由单机交易升级到了分布式，这个过程中产生了Notify。<br>2010年，阿里巴巴B2B部门基于ActiveMQ的5.1版本也开发了自己的一款消息引擎，称为Napoli。<br>2011年，Linkin推出Kafka消息引擎，阿里巴巴在研究了Kafka的整体机制和架构设计之后，基于Kafka的设计使用Java进行了完全重写并推出了MetaQ 1.0版本，主要是用于解决顺序消息和海量堆积的问题，由开源社区killme2008维护。<br>2012年，阿里巴巴对于MetaQ进行了架构重组升级，开发出了MetaQ 2.0，这时就发现MetaQ原本基于Kafka的架构在阿里巴巴如此庞大的体系下很难进行水平扩展，所以在2012年的时候就开发了RocketMQ 3.0。<br>2015年，又基于RocketMQ开发了阿里云上的Aliware MQ和Notify 3.0。<br>2016年，阿里巴巴将RocketMQ的内核引擎捐赠给了Apache基金会。</p></blockquote><p>MetaQ和RocketMQ区别：两者等价，在阿里内部称为MetaQ 3.0，对外称为RocketMQ 3.0。</p><p>以上就是RocketMQ的整体发展历史，其实在阿里巴巴内部围绕着RocketMQ内核打造了三款产品，分别是MetaQ、Notify和Aliware MQ。这三者分别采用了不同的模型：</p><blockquote><p>MetaQ主要使用了拉模型，解决了顺序消息和海量堆积问题。<br>Notify主要使用了推模型，解决了事务消息<br>而云产品Aliware MQ则是提供了商业化的版本。</p></blockquote><p>从阿里内部同学获取到的信息，阿里内部使用多套消息队列服务，并不统一，有三套消息队列服务: notify, metaQ(kafka),RocketMQ。没有特殊需求时，一般使用metaQ，需要事务消息时，使用notify，需要定时消息时使用RocketMQ.</p><p>RocketMQ架构图</p><div style="zoom:80%"> <img src="/2020/04/28/Mafka%E5%AF%B9%E6%AF%94RocketMQ-%E4%B8%80-%E7%AE%80%E4%BB%8B/rocketmq_arch.svg" class title="rocketMQ 架构"> </div>]]></content>
+    
+    <summary type="html">
+    
+      Mafka是美团基于kafka自研的消息中间件，RocketMQ是阿里巴巴开源的一个消息队列，本系列文章会对Mafka和RocketMQ的技术架构、功能等做深入的对比和研究。
+    
+    </summary>
+    
+    
+      <category term="消息队列" scheme="https://www.wangjunfei.com/categories/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97/"/>
+    
+    
+      <category term="rocketmq" scheme="https://www.wangjunfei.com/tags/rocketmq/"/>
+    
+      <category term="消息队列" scheme="https://www.wangjunfei.com/tags/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97/"/>
+    
+      <category term="kafka" scheme="https://www.wangjunfei.com/tags/kafka/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>RocketMQ消息队列(一)架构</title>
+    <link href="https://www.wangjunfei.com/2020/04/28/RocketMQ%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97-%E6%9E%B6%E6%9E%84/"/>
+    <id>https://www.wangjunfei.com/2020/04/28/RocketMQ%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97-%E6%9E%B6%E6%9E%84/</id>
+    <published>2020-04-28T10:07:34.000Z</published>
+    <updated>2020-04-28T10:52:23.621Z</updated>
+    
+    <content type="html"><![CDATA[<p><font color="blue"> 注意：原创文章，转载请注明出处.</font></p><h2 id="架构概览"><a href="#架构概览" class="headerlink" title="架构概览"></a>架构概览</h2><p>RockeMQ 主要包含两个模块 Broker和Name Server，如下图所示:</p><div style="zoom:80%"> <img src="/2020/04/28/RocketMQ%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97-%E6%9E%B6%E6%9E%84/rocketmq_arch.svg" class title="图片信息描述"> </div><h3 id="NameServer"><a href="#NameServer" class="headerlink" title="NameServer"></a>NameServer</h3><p>NameServer是一个非常简单的Topic路由注册中心，其角色类似Dubbo中的zookeeper，支持Broker的动态注册与发现。</p><p>主要包括两个功能：</p><ol><li><p>Broker管理，NameServer接受Broker集群的注册信息并且保存下来作为路由信息的基本数据。然后提供心跳检测机制，检查Broker是否还存活；</p></li><li><p>路由信息管理，每个NameServer将保存关于Broker集群的整个路由信息和用于客户端查询的队列信息。</p></li></ol><p>然后Producer和Consumer通过NameServer就可以知道整个Broker集群的路由信息，从而进行消息的投递和消费。</p><p>NameServer通常也是集群的方式部署，各实例间相互不进行信息通讯。Broker是向每一台NameServer注册自己的路由信息，所以每一个NameServer实例上面都保存一份完整的路由信息。</p><p>当某个NameServer因某种原因下线了，Broker仍然可以向其它NameServer同步其路由信息，Producer,Consumer仍然可以动态感知Broker的路由的信息。</p><h3 id="Broker"><a href="#Broker" class="headerlink" title="Broker"></a>Broker</h3><p>Broker主要负责消息的存储、投递和查询以及服务高可用保证。broker会每隔30s向集群中的所有nameserver发送一个心跳包，nameserver会每隔10s扫描自己保存的broker列表，看broker最后一次发送的心跳包是否是120s前的，如果是就删除这个broker，关闭链接。</p><h3 id="生产端和生产端集群"><a href="#生产端和生产端集群" class="headerlink" title="生产端和生产端集群"></a>生产端和生产端集群</h3><p>Producer与NameServer集群中的其中一个节点（随机选择）建立长连接，定期从NameServer获取Topic路由信息，并向提供Topic 服务的Master建立长连接，且定时向Master发送心跳。Producer完全无状态，可集群部署。</p><p>group name相同的一组生产端，称之为生产端集群。集群内每个生产者都会给master发送心跳，所以master是掌握所有生产者信息的，在事务消息回查时，broker端可选择生产端集群中的一个，来执行回查逻辑。</p><h3 id="消费端和消费端集群"><a href="#消费端和消费端集群" class="headerlink" title="消费端和消费端集群"></a>消费端和消费端集群</h3><p>Consumer与NameServer集群中的其中一个节点（随机选择）建立长连接，定期从NameServer获取Topic路由信息，并向提供Topic服务的Master、Slave建立长连接，且定时向Master、Slave发送心跳。Consumer既可以从Master订阅消息，也可以从Slave订阅消息，消费者在向Master拉取消息时，Master服务器会根据拉取偏移量与最大偏移量的距离（判断是否读老消息，产生读I/O），以及从服务器是否可读等因素建议下一次是从Master还是Slave拉取。</p><p>groupname相同的消费端，称之为一个集群。集群内每个消费者都会给broker发送心跳，所以broker端也掌握了所有消费者的信息，每个消费者上线、或下线时都会来查阅这个信息，进行队列重分配。</p><h3 id="Broker集群"><a href="#Broker集群" class="headerlink" title="Broker集群"></a>Broker集群</h3><p>RocketMQ的集群比较特殊，是多个单元组成的一个集群。如上图所示，整个集群包含5台broker，两个单元，第一个单元是3台broker，一主两从，第二个单元是一主一从。集群的划分是以cluster name名称为准备，命名相同的机器都属于一个集群。如上图，所有broker的cluster name属性都叫order-cluster，他们都属于一个集群。</p><p>name相同的一组broker是一个单元，同一单元内，id属性为0的broker是master，id属性为1的为第一slave，其他都是slave.</p><h2 id="Topic和队列概念"><a href="#Topic和队列概念" class="headerlink" title="Topic和队列概念"></a>Topic和队列概念</h2><p>Kafka里每个topic各自的partition消息，都会写入自己的文件里。RocketMQ不一样，它把所有的topic数据全部写入一个文件里，称之为commit log。但消费的时候怎么区分每个队列呢？答案是broker接收到消息后，统一都写入一个消息日志(commit log)文件，由转发服务(reput Service)再转发生成消费队列(consume quue)文件，如下图所示:</p><div style="zoom:80%"> <img src="/2020/04/28/RocketMQ%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97-%E6%9E%B6%E6%9E%84/rocketmq_queue.svg" class title="图片信息描述"> </div>上图可以看到有两个文件：<p>(1) CommitLog：消息主体以及元数据的存储主体，存储Producer端写入的消息主体内容,消息内容不是定长的。单个文件大小默认1G ，文件名长度为20位，左边补零，剩余为起始偏移量，比如00000000000000000000代表了第一个文件，起始偏移量为0，文件大小为1G=1073741824；当第一个文件写满了，第二个文件为00000000001073741824，起始偏移量为1073741824，以此类推。消息主要是顺序写入日志文件，当文件满了，写入下一个文件；</p><p>(2) ConsumeQueue：消息消费队列，引入的目的主要是提高消息消费的性能，类似于kafka中的partition概念，由于RocketMQ是基于主题topic的订阅模式，消息消费是针对主题进行的，如果要遍历commitlog文件中根据topic检索消息是非常低效的。Consumer即可根据ConsumeQueue来查找待消费的消息。其中，ConsumeQueue（逻辑消费队列）作为消费消息的索引，保存了指定Topic下的队列消息在CommitLog中的起始物理偏移量offset，消息大小size和消息Tag的HashCode值。consumequeue文件可以看成是基于topic的commitlog索引文件。同样consumequeue文件采取定长设计，每一个条目共20个字节，分别为8字节的commitlog物理偏移量、4字节的消息长度、8字节tag hashcode，单个文件由30W个条目组成，可以像数组一样随机访问每一个条目，每个ConsumeQueue文件大小约5.72M；</p><p>还有一个文件是:</p><p> IndexFile：IndexFile（索引文件）提供了一种可以通过key或时间区间来查询消息的方法。Index文件名fileName是以创建时的时间戳命名的，固定的单个IndexFile文件大小约为400M，一个IndexFile可以保存 2000W个索引，IndexFile的底层存储设计为在文件系统中实现HashMap结构，故rocketmq的索引文件其底层实现为hash索引。</p><h3 id="队列分布方式"><a href="#队列分布方式" class="headerlink" title="队列分布方式"></a>队列分布方式</h3><p>了解了RocketMQ中 topic和consume queue概念，以及rocketmq集群搭建方式后，就很容易了解 rocketmq队列的分布方式了，以图1中2 master 3 slave的5 台机器组成的集群为例，比如创建一个topic 和6个队列(consume queue)，可以如下来分布。</p><div style="zoom:80%"> <img src="/2020/04/28/RocketMQ%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97-%E6%9E%B6%E6%9E%84/rocketmq_queue_deploy.svg" class title="图片信息描述"> </div>brokerA的master节点有3个队列， brokerB的master节点有3个队列，这里的队列类似Kafka中的partition概念。]]></content>
+    
+    <summary type="html">
+    
+      RocketMQ是阿里巴巴开源的一个消息队列，本系列文章会对RocketMQ的技术架构、功能等做深入的研究。
+    
+    </summary>
+    
+    
+      <category term="消息队列" scheme="https://www.wangjunfei.com/categories/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97/"/>
+    
+    
+      <category term="rocketmq" scheme="https://www.wangjunfei.com/tags/rocketmq/"/>
+    
+      <category term="消息队列" scheme="https://www.wangjunfei.com/tags/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97/"/>
+    
+      <category term="kafka" scheme="https://www.wangjunfei.com/tags/kafka/"/>
+    
+  </entry>
   
   <entry>
     <title>磁盘读写优化技术研究-Zookeeper/Kafka/MySQL</title>
@@ -35,9 +89,9 @@
       <category term="磁盘读写优化" scheme="https://www.wangjunfei.com/categories/%E7%A3%81%E7%9B%98%E8%AF%BB%E5%86%99%E4%BC%98%E5%8C%96/"/>
     
     
-      <category term="zookeeper" scheme="https://www.wangjunfei.com/tags/zookeeper/"/>
-    
       <category term="kafka" scheme="https://www.wangjunfei.com/tags/kafka/"/>
+    
+      <category term="zookeeper" scheme="https://www.wangjunfei.com/tags/zookeeper/"/>
     
       <category term="mysql" scheme="https://www.wangjunfei.com/tags/mysql/"/>
     
@@ -64,13 +118,13 @@
       <category term="分布式技术" scheme="https://www.wangjunfei.com/categories/%E5%88%86%E5%B8%83%E5%BC%8F%E6%8A%80%E6%9C%AF/"/>
     
     
+      <category term="kafka" scheme="https://www.wangjunfei.com/tags/kafka/"/>
+    
       <category term="zookeeper" scheme="https://www.wangjunfei.com/tags/zookeeper/"/>
     
       <category term="consensus algorithm" scheme="https://www.wangjunfei.com/tags/consensus-algorithm/"/>
     
       <category term="zab" scheme="https://www.wangjunfei.com/tags/zab/"/>
-    
-      <category term="kafka" scheme="https://www.wangjunfei.com/tags/kafka/"/>
     
       <category term="一致性算法" scheme="https://www.wangjunfei.com/tags/%E4%B8%80%E8%87%B4%E6%80%A7%E7%AE%97%E6%B3%95/"/>
     
@@ -95,6 +149,8 @@
       <category term="分布式技术" scheme="https://www.wangjunfei.com/categories/%E5%88%86%E5%B8%83%E5%BC%8F%E6%8A%80%E6%9C%AF/"/>
     
     
+      <category term="kafka" scheme="https://www.wangjunfei.com/tags/kafka/"/>
+    
       <category term="zookeeper" scheme="https://www.wangjunfei.com/tags/zookeeper/"/>
     
       <category term="consensus algorithm" scheme="https://www.wangjunfei.com/tags/consensus-algorithm/"/>
@@ -102,8 +158,6 @@
       <category term="zab" scheme="https://www.wangjunfei.com/tags/zab/"/>
     
       <category term="分布式协议" scheme="https://www.wangjunfei.com/tags/%E5%88%86%E5%B8%83%E5%BC%8F%E5%8D%8F%E8%AE%AE/"/>
-    
-      <category term="kafka" scheme="https://www.wangjunfei.com/tags/kafka/"/>
     
   </entry>
   
@@ -126,6 +180,8 @@
       <category term="分布式技术" scheme="https://www.wangjunfei.com/categories/%E5%88%86%E5%B8%83%E5%BC%8F%E6%8A%80%E6%9C%AF/"/>
     
     
+      <category term="kafka" scheme="https://www.wangjunfei.com/tags/kafka/"/>
+    
       <category term="zookeeper" scheme="https://www.wangjunfei.com/tags/zookeeper/"/>
     
       <category term="consensus algorithm" scheme="https://www.wangjunfei.com/tags/consensus-algorithm/"/>
@@ -133,8 +189,6 @@
       <category term="zab" scheme="https://www.wangjunfei.com/tags/zab/"/>
     
       <category term="分布式协议" scheme="https://www.wangjunfei.com/tags/%E5%88%86%E5%B8%83%E5%BC%8F%E5%8D%8F%E8%AE%AE/"/>
-    
-      <category term="kafka" scheme="https://www.wangjunfei.com/tags/kafka/"/>
     
   </entry>
   
