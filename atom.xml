@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://www.wangjunfei.com/"/>
-  <updated>2020-04-28T10:48:15.570Z</updated>
+  <updated>2021-03-15T12:01:36.069Z</updated>
   <id>https://www.wangjunfei.com/</id>
   
   <author>
@@ -15,6 +15,35 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>消息队列领域前沿调研</title>
+    <link href="https://www.wangjunfei.com/2021/03/15/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E9%A2%86%E5%9F%9F%E5%89%8D%E6%B2%BF%E8%B0%83%E7%A0%94/"/>
+    <id>https://www.wangjunfei.com/2021/03/15/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E9%A2%86%E5%9F%9F%E5%89%8D%E6%B2%BF%E8%B0%83%E7%A0%94/</id>
+    <published>2021-03-15T08:46:55.000Z</published>
+    <updated>2021-03-15T12:01:36.069Z</updated>
+    
+    <content type="html"><![CDATA[<h1 id="云原生"><a href="#云原生" class="headerlink" title="云原生"></a>云原生</h1><h2 id="云原生定义"><a href="#云原生定义" class="headerlink" title="云原生定义"></a>云原生定义</h2><p>云原生组织(The Cloud Native Computing Foundation)在官方文档里对云原生做了定义: (参看官方文档):</p><blockquote><p>Cloud-native technologies empower organizations to build and run scalable applications in modern, dynamic environments such as public, private, and hybrid clouds. Containers, service meshes, microservices, immutable infrastructure, and declarative APIs exemplify this approach.RxJava</p></blockquote><blockquote><p>翻译: 云原生技术赋予了企业在现代化、动态化的环境比如公有云、私有云以及混合云上开发和运营应用的能力。容器，service mesh，微服务，不可变基础设施以及声名式api都是典型的云原生技术。</p></blockquote><blockquote><p>These techniques enable loosely coupled systems that are resilient, manageable, and observable. Combined with robust automation, they allow engineers to make high-impact changes frequently and predictably with minimal toil.</p></blockquote><blockquote><p>翻译: 这类技术能让各系统松散的结合在一起，而且有弹性，可控制、可观测的。配合强壮的自动化工具，可以让工程师轻而易举的经常对系统做重大的变更。</p></blockquote><p>随着用户对应用(app，以下称应用)的需求不断增加，应用会变得越来越复杂，但用户的要求却会越来越高，他们希望应用能有更快的响应速度，全新的功能，以及零时间宕机。性能问题，重复出现的错误，演进速度慢越来越会让人难以接受，用户会轻易的转向竞争对手。</p><p>云原生更多的是速度和敏捷。随着市场环境的不断变化，技术需要快速的支撑产品来抢占市场和商机，云原生就是这样的辅助技术。</p><p>云原生的速度和敏捷特性来自于以下几个方面的支持:</p><h2 id="Mafka的云原生建设目标"><a href="#Mafka的云原生建设目标" class="headerlink" title="Mafka的云原生建设目标"></a>Mafka的云原生建设目标</h2><p>Mafka作为支撑服务(PaaS)之一，同样也需要满足云原生中速度和敏捷的要求，主要体现在以下几个方面:</p><div style="zoom:80%">  </div><h3 id="集群SLA要求"><a href="#集群SLA要求" class="headerlink" title="集群SLA要求:"></a>集群SLA要求:</h3><ol><li><p>更快的扩容</p><ul><li>依托容器技术、自身架构的改造，当集群需要扩容，缩容时，集群能快速、简单的实现扩容</li></ul></li><li><p>更快的容灾切换速度</p><ul><li>当机房出现断电等灾难时，客户端能实现快速的容灾切换速度。</li></ul></li><li><p>更长的消息保存时间，更大的消息传输</p><ul><li><p>当用户需要更长、更久的消息保存时间时，依托自身的架构改造，能实现冷热消息的分离存储。</p></li><li><p>集群能实现更大消息(超过1M的消息体)生产和消费</p></li></ul></li><li><p>更小的集群宕机影响</p><ul><li>当集群出现宕机时，最小程度的减少对业务的影响，力求对用户无感知。</li></ul></li><li><p>更快的宕机恢复</p><ul><li>当集群出现宕机时，集群能自动拉起新的机器(实例)来补充，快速恢复数据，满足用户的数据副本要求。</li></ul></li></ol><h3 id="集群运营要求"><a href="#集群运营要求" class="headerlink" title="集群运营要求:"></a>集群运营要求:</h3><ol><li><p>集群自动化，智能化运营</p><ul><li>集群自动化运营和管理，节点替换、宕机下线，流量均衡，负载均衡，版本升级等能做到“一键自动化”，智能化。</li></ul></li><li><p>智能化用户辅助和预警</p><ul><li><p>用户队列发生积压时，能收集数据帮助用户快速定位问题，解决问题。</p></li><li><p>用户流量不均衡时，能提示用户更高效的生产和消费方式。</p></li><li><p>通过分析用户的消费速度和机器环境，提前预警队列消费积压等问题。</p></li></ul></li></ol><h1 id="流式计算"><a href="#流式计算" class="headerlink" title="流式计算"></a>流式计算</h1><h2 id="实时计算"><a href="#实时计算" class="headerlink" title="实时计算"></a>实时计算</h2><p>数据的业务价值随着时间的流失而迅速降低，因此在数据发生后必须尽快对其进行计算和处理。而传统的大数据处理模式无法满足数据实时计算的需求。</p><p>在诸如实时大数据分析、风控预警、实时预测、金融交易等诸多业务场景领域，批量处理对于上述对于数据处理时延要求苛刻的应用领域而言是完全无法胜任其业务需求的。</p><h2 id="现有流式计算技术"><a href="#现有流式计算技术" class="headerlink" title="现有流式计算技术"></a>现有流式计算技术</h2><p>storm、trident是比较早的流式计算技术，spark更新一些，现在最流行是Flink/Samza以及kafka stream一类非微批，每个事件逐一实时处理的新技术。</p><p>各个技术之间的比较如下图:</p><style>table th:first-of-type {    width: 4cm;}table th:nth-of-type(2) {    width: 150pt;}table th:nth-of-type(3) {    width: 8em;}table th:nth-of-type(4) {    width: 150pt;}table th:nth-of-type(5) {    width: 150pt;}table th:nth-of-type(6) {    width: 150pt;}</style><table><thead><tr><th align="left">项目</th><th align="left">Storm</th><th align="left">Trident</th><th align="left">Spark Streaming</th><th align="left">Flink</th><th align="left">Samza</th><th align="left">Kafka streams</th></tr></thead><tbody><tr><td align="left">数据流模型</td><td align="left">原生</td><td align="left">微批</td><td align="left">微批</td><td align="left">原生</td><td align="left">原生</td><td align="left">原生</td></tr><tr><td align="left">状态存储</td><td align="left">不支持状态管理</td><td align="left">本地存储，外部数据库</td><td align="left">多种状态存储方式</td><td align="left">多种状态存储方式</td><td align="left">本地存储，Kafka主题</td><td align="left">本地存储，日志变更主题</td></tr><tr><td align="left">时延</td><td align="left">低</td><td align="left">高</td><td align="left">高</td><td align="left">低</td><td align="left">低</td><td align="left">低</td></tr><tr><td align="left">吞吐量</td><td align="left">低</td><td align="left">高</td><td align="left">高</td><td align="left">高</td><td align="left">高</td><td align="left">高</td></tr><tr><td align="left">保障机制</td><td align="left">at-least-once</td><td align="left">exactly-once</td><td align="left">exactly-once</td><td align="left">exactly-once</td><td align="left">at-least-once</td><td align="left">exactly-once</td></tr><tr><td align="left">容错机制</td><td align="left">record ack</td><td align="left">record ack</td><td align="left">RDD based，checkpoint</td><td align="left">checkpoint</td><td align="left">Kafka log-base</td><td align="left">Kafka log</td></tr><tr><td align="left">成熟度</td><td align="left">作为较早开发的流处理框架，虽然有很多不足，但实际应用仍然比较广泛</td><td align="left">当前比较流行的框架之一，Spark大环境</td><td align="left">较新的流处理框架，性能非常优秀，阿里应用并做相应修改Blink</td><td align="left">基于Kafka作为数据源</td><td align="left">完全基于Kafka集群实现</td><td align="left"></td></tr><tr><td align="left">定位</td><td align="left"></td><td align="left"></td><td align="left">框架</td><td align="left"></td><td align="left"></td><td align="left">库</td></tr></tbody></table><p>由上图可见，Flink/Samza/Kafka Stream典型的特征是，高吞吐，低延时，实时流式处理。但三者又有不同点，Flink可以基于多种数据存储做计算，Samza/Kafka Stream都是以kafka为数据源做计算。</p><p>但Kafka Stream在这里独有三个优势:</p><ol><li><p>Kafka Stream非常的轻量级，可以应用到微服务、IOT等实时流式计算场景:</p><ul><li>Samza/Flink都是计算框架，需要部署一个集群，将自己的流式作业上传到集群处理，kafaStreams是lib库，业务程序集成后就可以可开始流式计算。</li></ul></li><li><p>KafkaStreams是本地lib库，开发迭代成本低</p><ul><li>意味着RD可以在本地开发和测试自己的Kafka Stream流式任务，Samza/Flink等需要将服务部署到集群上，开发者很难了解框架的具体运行方式，从而使得调试成本高，并且使用受限.</li></ul></li><li><p>接入方便，使用成本低</p><ul><li>Mafka在公司内广泛使用，业务已经将消息和数据发往了Mafka，如果Mafka推出stream流式计算，业务只要升级Mafka client版本，既可拥有流式计算能力，相对业务来说，使用流式计算技术的成本非常低。</li></ul></li></ol>]]></content>
+    
+    <summary type="html">
+    
+      云原生，流式计算，本文对消息队列领域目前的前沿技术进行了简单的调研和分析。
+    
+    </summary>
+    
+    
+      <category term="消息队列" scheme="https://www.wangjunfei.com/categories/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97/"/>
+    
+    
+      <category term="消息队列" scheme="https://www.wangjunfei.com/tags/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97/"/>
+    
+      <category term="kafka" scheme="https://www.wangjunfei.com/tags/kafka/"/>
+    
+      <category term="云原生" scheme="https://www.wangjunfei.com/tags/%E4%BA%91%E5%8E%9F%E7%94%9F/"/>
+    
+      <category term="流式计算" scheme="https://www.wangjunfei.com/tags/%E6%B5%81%E5%BC%8F%E8%AE%A1%E7%AE%97/"/>
+    
+  </entry>
   
   <entry>
     <title>Mafka对比RocketMQ(一)简介</title>
