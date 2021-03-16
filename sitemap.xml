@@ -2,6 +2,48 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://www.wangjunfei.com/2021/03/16/%E3%80%8A%E5%8D%8E%E4%B8%BA%E7%81%B0%E5%BA%A6%E7%AE%A1%E7%90%86%E6%B3%95%E3%80%8B%E9%98%85%E8%AF%BB-%E5%89%8D%E8%A8%80/</loc>
+    
+    <lastmod>2021-03-16T08:06:43.046Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://www.wangjunfei.com/2021/03/16/%E3%80%8A%E5%8D%8E%E4%B8%BA%E7%81%B0%E5%BA%A6%E7%AE%A1%E7%90%86%E6%B3%95%E3%80%8B%E9%98%85%E8%AF%BB-%E7%AC%AC%E4%B8%80%E7%AB%A0-%E7%81%B0%E5%BA%A6%E6%96%87%E5%8C%96/</loc>
+    
+    <lastmod>2021-03-16T08:06:39.015Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://www.wangjunfei.com/2021/03/16/%E3%80%8A%E5%8D%8E%E4%B8%BA%E7%81%B0%E5%BA%A6%E7%AE%A1%E7%90%86%E6%B3%95%E3%80%8B%E9%98%85%E8%AF%BB-%E7%AC%AC%E4%B8%89%E7%AB%A0-%E7%81%B0%E5%BA%A6%E7%9A%84%E8%AF%84%E4%BB%B7/</loc>
+    
+    <lastmod>2021-03-16T08:06:34.414Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://www.wangjunfei.com/2021/03/16/%E3%80%8A%E5%8D%8E%E4%B8%BA%E7%81%B0%E5%BA%A6%E7%AE%A1%E7%90%86%E6%B3%95%E3%80%8B%E9%98%85%E8%AF%BB-%E7%AC%AC%E4%BA%8C%E7%AB%A0-%E7%81%B0%E5%BA%A6%E7%94%A8%E4%BA%BA%E4%B9%8B%E6%B3%95/</loc>
+    
+    <lastmod>2021-03-16T08:06:29.252Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://www.wangjunfei.com/2021/03/16/%E3%80%8A%E5%8D%8E%E4%B8%BA%E7%81%B0%E5%BA%A6%E7%AE%A1%E7%90%86%E6%B3%95%E3%80%8B%E9%98%85%E8%AF%BB-%E7%AC%AC%E5%9B%9B%E7%AB%A0-%E7%81%B0%E5%BA%A6%E9%AB%98%E6%95%88%E7%BB%84%E7%BB%87%E4%BD%93%E7%B3%BB/</loc>
+    
+    <lastmod>2021-03-16T08:06:24.166Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://www.wangjunfei.com/2021/03/16/%E3%80%8A%E5%8D%8E%E4%B8%BA%E7%81%B0%E5%BA%A6%E7%AE%A1%E7%90%86%E6%B3%95%E3%80%8B%E9%98%85%E8%AF%BB-%E7%AC%AC%E4%BA%94%E7%AB%A0-%E7%81%B0%E5%BA%A6%E9%80%89%E6%8B%94/</loc>
+    
+    <lastmod>2021-03-16T08:06:10.139Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://www.wangjunfei.com/2021/03/15/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E9%A2%86%E5%9F%9F%E5%89%8D%E6%B2%BF%E8%B0%83%E7%A0%94/</loc>
     
     <lastmod>2021-03-15T12:01:36.069Z</lastmod>
@@ -72,14 +114,14 @@
   </url>
   
   <url>
-    <loc>https://www.wangjunfei.com/docs/rocketmq/concept.html</loc>
+    <loc>https://www.wangjunfei.com/docs/rocketmq/design.html</loc>
     
     <lastmod>2020-03-21T09:23:31.562Z</lastmod>
     
   </url>
   
   <url>
-    <loc>https://www.wangjunfei.com/docs/rocketmq/design.html</loc>
+    <loc>https://www.wangjunfei.com/docs/rocketmq/concept.html</loc>
     
     <lastmod>2020-03-21T09:23:31.562Z</lastmod>
     
@@ -93,7 +135,7 @@
   </url>
   
   <url>
-    <loc>https://www.wangjunfei.com/docs/rocketmq/RocketMQ_Example.html</loc>
+    <loc>https://www.wangjunfei.com/docs/rocketmq/architecture.html</loc>
     
     <lastmod>2020-03-21T09:23:31.561Z</lastmod>
     
@@ -107,7 +149,7 @@
   </url>
   
   <url>
-    <loc>https://www.wangjunfei.com/docs/rocketmq/architecture.html</loc>
+    <loc>https://www.wangjunfei.com/docs/rocketmq/RocketMQ_Example.html</loc>
     
     <lastmod>2020-03-21T09:23:31.561Z</lastmod>
     
