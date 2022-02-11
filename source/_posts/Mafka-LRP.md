@@ -95,7 +95,7 @@ Kafka官方公司Confluent Cloud For k8s的服务架构:
 #### 去除ZooKeeper依赖，提升broker的扩展性
 
 Kafka一开始设计的时候，依靠zookeeper来解决系统的一致性问题，比如集群controller的选主，partition leader的选主，同时还保存了集群的metadata信息。
-随着集群内topic数量，分区数量的增⻓，metadat数据数量也跟着增⻓，但是kafka集群在启动以后，或集群发生重新选主时，集群的controller需要全量拉取一次zookeeper上的m etadata数据，所以这个数据越
+随着集群内topic数量，分区数量的增⻓，metadat数据数量也跟着增⻓，但是kafka集群在启动以后，或集群发生重新选主时，集群的controller需要全量拉取一次zookeeper上的metadata数据，所以这个数据越
 大，拉取的耗时也会越⻓，直接影响了集群controller的可用性，最终必须限制metadata数据的大小， **这就限制了Kafka集群的横向扩展能力** 。
 
 ![](kafka_zk.svg)
