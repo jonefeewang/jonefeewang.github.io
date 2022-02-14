@@ -278,7 +278,7 @@ Kafka Stream对 EDA 架构具有天然的支持优势，如KTable，KSQL，各�
 参考:
 
 1. Making Apache Kafka Serverless: Lessons From Confluent Cloud
-2. Kafka，c onfluent，T he Cloud-Native Evolution of Apache Kafka on Kubernetes
-3. Kafka，c onfluent，M aking Apache Kafka Serverless: Lessons From Confluent Cloud
+2. Kafka，confluent，The Cloud-Native Evolution of Apache Kafka on Kubernetes
+3. Kafka，confluent，Making Apache Kafka Serverless: Lessons From Confluent Cloud
 4. Infinite Storage in Confluent Platform
  
