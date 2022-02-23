@@ -1,7 +1,7 @@
 ---
 layout: _post
 title: Kafka去Zookeeper揭秘
-date: 2022-02-15 17:05:52
+date: 2021-12-1
 description: 本文研究分析了kafka去zookeeper的实质，分析了kafka raft算法和普通raft的区别
 tags: kafka raft kraft zookeeper
 toc: true
@@ -28,8 +28,8 @@ parttion，ISR发生变化，broker节点上下线，partition重新分配，删
 
 ### 元数据加载速度慢
 
-上边说过，Zookeeper存储了Kafka集群所有的元数据，集群的Controller每次启动时，都需要将所有的元数据从Zookeeper上全量拉取一次，试想当集群的broker节点、topic、c onsumer或p artition数量线性增⻓
-起来后，每次加载全量元数据的时间势必会很⻓，在此之间Controller是无法响应和工作的，这样势必会影响整个集群的可用性。此外zookeeper也不适宜存储大量的数据，读写qps的增加，以及leader和f ollower的
+上边说过，Zookeeper存储了Kafka集群所有的元数据，集群的Controller每次启动时，都需要将所有的元数据从Zookeeper上全量拉取一次，试想当集群的broker节点、topic、consumer或partition数量线性增⻓
+起来后，每次加载全量元数据的时间势必会很⻓，在此之间Controller是无法响应和工作的，这样势必会影响整个集群的可用性。此外zookeeper也不适宜存储大量的数据，读写qps的增加，以及leader和follower的
 切换，很容易造成⻓时间的java gc停顿，影响Z ookeeper的可用性。所以元数据加载慢这个问题，直接影响了集群的大小，比如集群内节点数量不能很多，partition数量不能很大，比如超过 100 万个。
 
 ### 数据一致性问题
@@ -49,7 +49,7 @@ Controller节点来重新全量加载Zookeeper数据，来恢复整个集群的�
 
 ![](arch1.svg)
 
-集群有 5 个节点，BrokerA和B rokerE是普通的节点，BrokerB、B rokerC、B rokerD是单纯的Controller节点。这里Controller是指一个⻆色，这三个Controller节点组成了一个一致性集群(Quorum)，三个节点会通过Raft算法选出一个Active的C ontroller担任整个集群真正的Controller，当Controller节点宕机或下线后，会重新选出一个新的Controller节点。
+集群有 5 个节点，BrokerA和B rokerE是普通的节点，BrokerB、B rokerC、BrokerD是单纯的Controller节点。这里Controller是指一个⻆色，这三个Controller节点组成了一个一致性集群(Quorum)，三个节点会通过Raft算法选出一个Active的C ontroller担任整个集群真正的Controller，当Controller节点宕机或下线后，会重新选出一个新的Controller节点。
 
 或是以下方式部署，每个Controller节点还可以同时起一个普通节点进程，在同一个Jvm内，但是在不同端口来接受服务请求。
 ![](arch2.svg)
