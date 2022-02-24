@@ -54,13 +54,12 @@ Controller节点来重新全量加载Zookeeper数据，来恢复整个集群的�
 或是以下方式部署，每个Controller节点还可以同时起一个普通节点进程，在同一个Jvm内，但是在不同端口来接受服务请求。
 ![](arch2.svg)
 
-去除Zookeeper之后，需要在部署集群节点时，在配置文件内写清楚每个节点的⻆色(Role)，如果是Broker，就是普通节点，如果是Controller则是C ontroller节点，如果两个都有，则在同一个JVM内启动两个⻆色
+去除Zookeeper之后，需要在部署集群节点时，在配置文件内写清楚每个节点的⻆色(Role)，如果是Broker，就是普通节点，如果是Controller则是Controller节点，如果两个都有，则在同一个JVM内启动两个⻆色
 的实例。同时还要写清楚集群Quroum的每个节点的IP，以及集群cluster ID等信息。
 
-**集群数据存储方面，** 集群的topic、consumer、partition等信息，从创建到变更都存储在Raft Log（相关的Raft背景知识可以先了解下）里，为了和原有的Kafka Log保持一致性和兼容，这里的RaftLog直接使用了Kafka原有Log的格式，并追加了一些特殊字段，除此之外可以理解为普通的Topic Log，但是只有一个partition，而且没有副本，没有partition leader。普通Broker节点会通过监听器，(从本机Raft层)实时接收最
-新的元数据变更信息，并应用到自己的metadata cache内，供本机使用。
+**集群数据存储方面，** 集群的topic、consumer、partition等信息，从创建到变更都存储在Raft Log（相关的Raft背景知识可以先了解下）里，为了和原有的Kafka Log保持一致性和兼容，这里的RaftLog直接使用了Kafka原有Log的格式，并追加了一些特殊字段，除此之外可以理解为普通的Topic Log，但是只有一个partition，而且没有副本，没有partition leader。普通Broker节点会通过监听器，(从本机Raft层)实时接收最新的元数据变更信息，并应用到自己的metadata cache内，供本机使用。
 
-**任务监听回调方面，** 之前需要Controller监听Zookeeper节点所做的任务，比如Broker节点的上下线，是通过Broker节点和Active Controller节点之间的心跳来达成变更的，其他的比如创建topic、c onsumer、扩容partition等集群内任务，如果发到了普通节点，都会被转发给Active的C ontroller来执行，Active Controller将执行结果通过运行Raft算法来复制到Quorum的其他节点上，数据会在被各节点真正Committed（Raft Committed，这里需要了解一些Raft背景知识）之后，应用到本机的状态机内，形成metadata cache。
+**任务监听回调方面，** 之前需要Controller监听Zookeeper节点所做的任务，比如Broker节点的上下线，是通过Broker节点和Active Controller节点之间的心跳来达成变更的，其他的比如创建topic、consumer、扩容partition等集群内任务，如果发到了普通节点，都会被转发给Active的Controller来执行，Active Controller将执行结果通过运行Raft算法来复制到Quorum的其他节点上，数据会在被各节点真正Committed（Raft Committed，这里需要了解一些Raft背景知识）之后，应用到本机的状态机内，形成metadata cache。
 
 去除Zookeeper之后，集群的元数据在Quorum节点之内会以Raft Log方式来复制，因此当Controller宕机之后，新选出来的Active Controller本地就有全量数据，不需要再从其他节点拉取，这样就解决了上一部分说的“元数据加载慢”的问题，第二因为现在的元数据是以Raft Log的方式来存储和复制，也不存在“内存和Zookeeper”之间数据不一致的问题，由Raft来保障集群内所有节点上的元数据一致性。最后，去除了Zookeeper之后，因为数据就在Kafka内部，也不需要额外再维护另外一个组件。
 
@@ -81,7 +80,7 @@ Controller节点来重新全量加载Zookeeper数据，来恢复整个集群的�
 
 正常场景下，Raft集群内所有节点只有 2 中⻆色，Leader 和 Follower。
 
-* leader: 集群内只有一个leader，负责接收客户端的请求，发送AE请求给follower，复制command或发送心跳。
+* leader: 集群内只有一个leader，负责接收客户端的请求，发送AE(AppendEntries)请求给follower，复制command或发送心跳。
 * Follower：被动接受leader发来的心跳请求或是复制过来的command.
 
 异常场景下，多了一种状态candidate
@@ -99,7 +98,7 @@ Controller节点来重新全量加载Zookeeper数据，来恢复整个集群的�
 1. 客户端发送submit请求(包含的具体内容是command)给leader.
 2. leader保存command到本地log里作为一个新的entry.
 3. leader发送AppendEntries请求给集群内其他的server，
-4. 当L eader收集到集群内多数派server的正确响应后，将comand应用到本地状态机。
+4. 当Leader收集到集群内多数派server的正确响应后，将comand应用到本地状态机。
 5. leader将上一步中状态机返回的结果返回给客户端
 
 #### RPC请求类型
@@ -127,8 +126,8 @@ Kafka Raft里节点的状态转换如下图所示，但是注意下，这个是K
 正常场景下，整个quorum里的⻆色包含以下几个：
 
 * leader：接受客户端请求。注意这里的客户端不是指kafka生产消费消息的客户端，是指controller，controller在处理一些集群内管理事务时，会生成一些command，这些command 会提交给 leader，运行一次raft算法。
-* follower：主动从leader上拉取command，注意这点跟Raft是不一样的，在Raft里follower是一个被动⻆色，等待leader的A E请求。
-* observer：不参与抢主，也不参与投票，只从leader拉取c ommand，类似zookeeper里的o bserver，作为一个状态机的只读节点。注意，虽然KIP-595里定义了这个⻆色，到目前为止，在 3 .0版本的实现里它实际上是一个状态为unattached的节点。
+* follower：主动从leader上拉取command，注意这点跟Raft是不一样的，在Raft里follower是一个被动⻆色，等待leader的AE请求。
+* observer：不参与抢主，也不参与投票，只从leader拉取command，类似zookeeper里的observer，作为一个状态机的只读节点。注意，虽然KIP-595里定义了这个⻆色，到目前为止，在 3 .0版本的实现里它实际上是一个状态为unattached的节点。
 
 异常场景下，会多几个⻆色：
 
@@ -140,10 +139,10 @@ Kafka Raft里节点的状态转换如下图所示，但是注意下，这个是K
 
 #### ⻆色转换
 
-1. U nattached: 这是节点启动的初始状态，任何一个节点启动来后，会先进入这个状态。 如果当前节点为Voter（也就是⻆色配置为Controller的节点），经过election timeout的时间后转换为Candidate。如果当前节点不是Voter，则发起拉取FR(FetchRequest)请求。
-2. Candidate：经过election timeout之后，开始进行back off，给与其他Candidate发起V ote的机会，这里就是Raft paper中说到的Random时间发起Vote。如果在election timeout之内的话，会发起Vote请求。
+1. Unattached: 这是节点启动的初始状态，任何一个节点启动来后，会先进入这个状态。 如果当前节点为Voter（也就是⻆色配置为Controller的节点），经过election timeout的时间后转换为Candidate。如果当前节点不是Voter，则发起拉取FR(FetchRequest)请求。
+2. Candidate：经过election timeout之后，开始进行back off，给与其他Candidate发起Vote的机会，这里就是Raft paper中说到的Random时间发起Vote。如果在election timeout之内的话，会发起Vote请求。
 如果在back off 时间结束之后的话，会再次转换为Candidate，继续发起新一轮Vote。 在收到多数派节点的Vote支持之后，当选为Leader，转换为Leader状态。
-3. Voted：经过election timeout之后，转换为u nattached状态，否则继续等待。
+3. Voted：经过election timeout之后，转换为unattached状态，否则继续等待。
 4. Leader：在收到resign请求后，转换为resigned状态。
 5. Follower：经过election timeout 之后，转换为Candidate参与选举，否则发送FR请求，从Leader拉取最新的增量数据（依据上次拉取的Offset）。
 6. Resigned：leader在收到 resign请求后，会转换为这个状态，然后跟其他节点发送EndQuorum请求，代表卸任这个leader任期。
@@ -164,25 +163,25 @@ HighWaterMark，这里指的是标识已经被committed的数据。
   - 处理逻辑：处理逻辑和普通的Raft算法相同。
 2. BeginQuorum请求：leader发给q uorum里其他voter的请求。注意这个请求是标准R aft里没有的。其实这个请求的目的就是广播新当选的leader，因为在标准Raft里，心跳是由leader发出的，所以leader当选后发出心跳即可广播整个集群的新leaderID和leaderEpoch。但是kafka Raft在正常场景下都是依靠拉取(pull)来获得新的log的，没有从Leader发出的主动心跳请求，所以单加了这个。
   - 参数：leaderId、leaderEpoch
-  - 处理逻辑：查看本机epoch是否和leader的e poch相同，不同的话更新epoch，转换为f ollower⻆色。
+  - 处理逻辑：查看本机epoch是否和leader的e poch相同，不同的话更新epoch，转换为follower⻆色。
 3. EndQuorum请求：Kafka Raft新加的一个请求，作用是加速leader的优雅关闭。比如l eader在优雅关机的情况下，可以发出这个请求，主动通知其他Voter发起选举。如果么没有这个请求的话，其他Voter需要等待election timeout的而时间后才会发起新的选举，这无疑会延⻓集群无leader的时间。
   - 参数：leaderId、leaderEpoch、preferredSuccessors
   - 处理逻辑：接收到这个请求的voter会主动转换为candidate时间，但是会有一个不同的等待时间，这个等待时间是老的leader通过p referredSuccessors传给他的voter的。
 4. Fetch请求：这个是与标准Raft区别最大的地方，标准Raft是通过leader主动发起AE请求( push模式)给他节点，一方面复制log使用，另一方面作为心跳探活来使用。但是Kafka Raft是pull模式，所以log的拉取是依靠follower主动发起到leader的请求。这里需要介绍下Kafka Raft的snapShot，如下图所示，snapShot是Kafka节点里Kafka Raft的本机metadata数据的一个全量快照。Kafka会根据设定好的新增数据最大量来确定是否在log里某个offset新创建一个snapShot。
 ![](snapshot.svg)
-另外一个是在处理拉取请求时，leader需要比较Follower的日志状态。如下图所示，有些Follower的日志可能比leader少，比如(a)(b)。有些可能多，比如(c)(d)。有些情况有多又少，比如(e)(f)。leader需要根据不同的情况来处理，有些需要发送snapShot，有些需要告诉follower截取日志，有些正常的拉取，leader和f ollower根据请求和返回来前进自己的highWaterMark。
+另外一个是在处理拉取请求时，leader需要比较Follower的日志状态。如下图所示，有些Follower的日志可能比leader少，比如(a)(b)。有些可能多，比如(c)(d)。有些情况有多又少，比如(e)(f)。leader需要根据不同的情况来处理，有些需要发送snapShot，有些需要告诉follower截取日志，有些正常的拉取，leader和follower根据请求和返回来前进自己的highWaterMark。
 
 > *下图引用自Raft paper
 
 ![](log.svg)
 
   - 参数：currentLeaderEpoch、fetchOffset、lastFetchEpoch、logStartOffset
-  - 处理逻辑：follower的f etchOffset如果不在l eader的log范围之内，说明是新加入的follower或者是follower因为什么原因log差距太远了，这种情况下leader会返回响应，让follower再次发起一个拉取snapShot的请求。第二种情况是拉取leader检查出follower的lastFetchEpoch和fetchOffset与leader本机的log不匹配，发生了日志分歧，这时leader会返回一个调度日志的epoch和offset。最后一种情况是，follower拉取的offset范围是正常的，这时leader会返回上次拉取到当前的新增数据，如果没有的话，就等待一个时间。如果拉取到数据了，这时leader就可以检查多数派已经拉到的offset index，前进自己的highWaterMark。
+  - 处理逻辑：follower的fetchOffset如果不在leader的log范围之内，说明是新加入的follower或者是follower因为什么原因log差距太远了，这种情况下leader会返回响应，让follower再次发起一个拉取snapShot的请求。第二种情况是拉取leader检查出follower的lastFetchEpoch和fetchOffset与leader本机的log不匹配，发生了日志分歧，这时leader会返回一个调度日志的epoch和offset。最后一种情况是，follower拉取的offset范围是正常的，这时leader会返回上次拉取到当前的新增数据，如果没有的话，就等待一个时间。如果拉取到数据了，这时leader就可以检查多数派已经拉到的offset index，前进自己的highWaterMark。
 Follower在接收到leader的响应后，如果是要拉取snapShot，就发送snapShot拉取请求。如果发生了日志分歧，就开始截取日志，然后再发起拉取请求。如果是正常的返回，则比较leader返回的highWaterMark和本机的highWaterMark，看自己是否需要更新。
 
 ## 三. Kafka Raft思考和前瞻
 
-以上就是Kafka去除Z ookeeper的架构变更，和Kafka Raft的细节。虽然Kafka 2.8版本已经发布了KRaft模式作为Kafka 去除Z ookeeper预览，但是仍有一些重要的feature未实现。比如Quorum内节点替换，还有从非Raft模式到Raft模式的平滑滚动升级，这两项在实际的生产集群运营中都是必须的功能。
+以上就是Kafka去除Zookeeper的架构变更，和Kafka Raft的细节。虽然Kafka 2.8版本已经发布了KRaft模式作为Kafka 去除Z ookeeper预览，但是仍有一些重要的feature未实现。比如Quorum内节点替换，还有从非Raft模式到Raft模式的平滑滚动升级，这两项在实际的生产集群运营中都是必须的功能。
 
 此外，Kafka Raft整个模块的实现，相对与整个Kafka系统来说相对独立，只有log层是和原有的Kafka log是共用，因此可以考虑抽离整个模块做成一个单独的lib库，替换一些服务依赖Zookeeper做一致性的功能，随服务一起发布。但这里有三个问题，第一，服务之前可能是无状态的，因为添加了Kafka Raft lib库之后变成了有状态服务，这样服务器的批量启停和替换必须得额外注意，不能全部关闭，因为Raft Quorum需要一定数量的节点才能运行。第二，因为Kafka Raft依赖磁盘来存储Raft log，而且每次追加Log时，必须是刷盘操作，因此对磁盘的性能和空间有一定的要求。第三，Zookeeper中实现的临时节点抢占操作、Listener回调等语义需要通过变通的方法来解决，因为原生Kafka Raft内没有这些api。
 
