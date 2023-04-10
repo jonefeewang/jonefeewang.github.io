@@ -201,7 +201,7 @@ Mafka的消息队列在被业务客户端消费时，受限于Mafka的消费模�
 实际上Kafka官方本身就支持轻量的实时流式计算服务，叫做Kafka Stream。K afka Stream是集成在Kafka内部的轻量流式计算库，他跟Kafka集成在一起。
 不同于Flink和S torm，K afka Stream不是一个平台，不需要用户将代码打包上传到平台上，他只是一个简单的lib库，用户像写应用程序一样写流式计算服务，
 编译打包成功后，运行在用户自己的机器上。
-下图是一个Mafka集成K afka Stream后的部署架构图：
+下图是一个Mafka集成Kafka Stream后的部署架构图：
 
 ![](kafka_stream.svg)
  
