@@ -72,7 +72,7 @@ Apache pulsar是近年来国内比较时髦的消息队列，而且是开源的�
 3. 配置类信息：tenant/namespace/cluster/动态配置/policy配置，这些信息都是涉及到整个集群配置的，创建、删除、修改都依赖zk的增删改查
 
 # 分析
-## topic相关信息
+## 1.topic相关信息
 上边说过，pulsar集群在操作topic时，是以bundle为粒度，一个bundle包含一批topic。bundle 被集群内的不同节点持有，哪个节点持有某个bundle，它就负责这些topic相关的操作，比如创建和删除topic /group/ledger/cursor等信息。
 
 bundle 信息存储在zk上两个节点下:
@@ -80,9 +80,7 @@ bundle 信息存储在zk上两个节点下:
 
 - `/namespace/[namespace名称]/[localhost:8080]/[0x00000000_0xffffffff]` ，即/namespace/[bundle名称]的Value 值，是一个临时节点，存放了SelfOwnerInfo(java类，包含nativeUrl,httpUrl)，就是包含这个bundle的节点信息
 
-同时这两个节点也会在NamespaceBundleFactory和OwnershipCache中形成一个cache信息。
-
-namespaceService
+同时这两个节点也会在`NamespaceBundleFactory`和`OwnershipCache`中形成一个cache信息，跟bundle关心紧密的类还包括`NamespaceService`
 这个类主要是来服务bundle信息的，比如确定bundle在哪台broker上，获取一个bundle等，确定topic属于哪个bundle。
 
 ### 多个节点并发写zk导致的一致性挑战: bundle信息并发写 和 bundle所有权多节点并发抢占
@@ -114,9 +112,9 @@ NameSpaceService里的重要属性ownerShipCache对象，这个对象拥有一�
 
 copy polices to local polices: 把polices里的bundle信息保存到local policies里，保存时，期望zk里的version是 -1，其目的是表明是自己来完成初次的local polices的构造，防止覆盖了其他人的写。
 
-**总体来看**，namespace下所有bundle信息的维护，bundle的拆分，以及拆分后每个bundle的所有者分配，完全可以交由集群的leader来维护，避免多个节点都去执行写操作，产生并发写竞争。避免因为并发写，而必须引入zookeeper这个一致性协调者。所有的写操作，都可以交由leader来完成，leader和其他节点的通信，使用epoch方式来保障，确保集群内所有的节点对当前leader 有统一和一致的认识，这点可以参考Kafka类似的系统。 
+**总体来看**，<ins>namespace下所有bundle信息的维护，bundle的拆分，以及拆分后每个bundle的所有者分配，完全可以交由集群的leader来维护，避免多个节点都去执行写操作，产生并发写竞争。避免因为并发写，而必须引入zookeeper这个一致性协调者。所有的写操作，都可以交由leader来完成，leader和其他节点的通信，使用epoch方式来保障，确保集群内所有的节点对当前leader 有统一和一致的认识，这点可以参考Kafka类似的系统。</ins> 
 
-**当bundle信息确定后**，每个节点都有负责的一组固定的bundle，一个bundle对应着一批topic，topic的ledger信息、cursor信息、group 信息都有topic所在的节点自己来负责，对zk的读写操作基本都是低频的，即便发生并发，在单节点、单jvm内使用普通的java并发工具包类也是很好控制的，基本不涉及到多个节点的并发。因此这类操作，基本是拿zk当存储来使用，并没有使用到zk的全局一致性保障功能。
+**当bundle信息确定后**，<ins>每个节点都有负责的一组固定的bundle，一个bundle对应着一批topic，topic的ledger信息、cursor信息、group 信息都有topic所在的节点自己来负责，对zk的读写操作基本都是低频的，即便发生并发，在单节点、单jvm内使用普通的java并发工具包类也是很好控制的，基本不涉及到多个节点的并发。因此这类操作，基本是拿zk当存储来使用，并没有使用到zk的全局一致性保障功能。</ins>
 
 ### 附 topic相关的操作:
 <div style="color: #6E7173">
@@ -140,14 +138,19 @@ ledger、cursor 相关的topic操作列表，以及访问zk的操作
 
 </div>
 
-## broker 节点相关的操作
+## 2.broker 节点相关的操作
 broker 节点相关的zk操作基本都在`/loadbalance/`节点下，节点上线、下线会导致创建或删除临时节点，这一部分和负载均衡的逻辑在一起。
 所有 broker会定时将本机的负载数据，写到zk上，路径是`/loadbalance/broker-time-average/[ip]`，内容是LocalBrokerData类对象的json序列化。
 集群会首先选出一个leader，leader会启动一个loadSheddingTask和一个LoadResourceQuotaTask，前者会根据集群当前的负载信息卸载需要均衡的bundle，后者会综合所有 broker 上报的系统负载信息和bundle信息计算出长期、短期两个维度的负载信息，再更新到zk上，zk 路径是`/loadbalance/broker-time-average/[ip]`，内容是TimeAverageBrokerData对象的json序列化。这里leader broker和普通的broker往 zk 上上报的信息，使用的是不同节点，不涉及到zk的并发写，因此这里仍然是拿zk作为一个存储来使用的。
 
-## 配置相关的操作
+## 3.配置相关的操作
 tenant/namespace/cluster/动态配置/policy配置，这些信息都是涉及到整个集群配置的，创建、删除、修改都依赖zk的增删改查。这些信息都是集群的静态配置，目前是每个集群节点都可以去操作zk来处理这些请求的，
 同样也是通过zk的返回代码来判断是否有并发写，依据前面topic信息一类的分析，仍然是可以由集群leader来独自完成的，避免对zk的并发写。
+
+# 思考
+如果使用epoch的方法，所有的集群操作都由leader来完成，leader 会不会变成一个单点风险？ 确实会，不过这时可以用zk来做一个抢占临时节点来选出集群leader，这是唯一需要zk的地方，其他所有的集群写操作都由leader来完成，需要存储的数据由关系数据库或kv来完成(这一项我们在美团递消息队列Mafka castle的模块改动上有实践过)。
+
+如果都由leader来完成，leader会不会称为一个瓶颈点？不会，总结上边会触发zk写操作的事件，相比收发消息一类的请求来说，都不是一个量级的，所以leader节点不会是一个瓶颈点。如果实在担心，可以将leader节点设置为纯 leader，不承载任何 bundle 数据，不接受消息收发类的数据请求，这点我们在美团消息队列Mafka上使用过。还可以将数据请求操作和集群管理操作做分类，leader 节点在处理请求时，优先处理管理类操作，也可以减轻leader节点的负担，就像是Kafka在1.1.0版本后的改动一样。
 
 
 
