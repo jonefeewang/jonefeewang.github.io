@@ -1,7 +1,7 @@
 layout: _post
 title: Apache pulsar对zookeeper的依赖和去除分析(一)
 date: 2023-06-15 17:13:00
-description: Apache pulsar对zookeeper的依赖和去除分析(一)
+description: 本文分析了apache pulsar broker对zk的依赖和去除思考
 tag: Apache pulsar 消息队列 kafka RocketMQ
 toc: true
 ---
