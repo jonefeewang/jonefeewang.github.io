@@ -1,23 +1,6 @@
 title: 关于我自己
 date: 2022-02-10 16:16:22
 ---
-
-<img src="/img/2_5inch.png" align="left" title="王军飞" style="zoom:100%">
-
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-
-<br/>
-<br/>
-<br/>
-<br/>
-
-
 姓名: 王军飞
 性别: 男
 邮箱: jonefeewang@outlook.com
