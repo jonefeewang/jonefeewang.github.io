@@ -1,0 +1,186 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description" content="王军飞的博客"><title>消息队列领域前沿分析 | 王军飞的随笔</title><link rel="stylesheet" type="text/css" href="/css/style.css?v=1.0.0"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/normalize/latest/normalize.min.css"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/pure/latest/pure-min.min.css"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/pure/latest/grids-responsive-min.min.css"><link rel="stylesheet" href="//lib.baomitu.com/font-awesome/4.7.0/css/font-awesome.min.css"><script type="text/javascript" src="//lib.baomitu.com/jquery/latest/jquery.min.js"></script><link rel="icon" mask="" sizes="any" href="/favicon.ico"><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="apple-touch-icon-precomposed" href="/apple-touch-icon.png"><link rel="alternate" type="application/atom+xml" href="/atom.xml"><script type="text/javascript" src="//lib.baomitu.com/clipboard.js/latest/clipboard.min.js"></script><script type="text/javascript" src="//lib.baomitu.com/toastr.js/latest/toastr.min.js"></script><link rel="stylesheet" href="//lib.baomitu.com/toastr.js/latest/toastr.min.css"><meta name="generator" content="Hexo 7.1.1">
+<style>.github-emoji { position: relative; display: inline-block; width: 1.2em; min-height: 1.2em; overflow: hidden; vertical-align: top; color: transparent; }  .github-emoji > span { position: relative; z-index: 10; }  .github-emoji img, .github-emoji .fancybox { margin: 0 !important; padding: 0 !important; border: none !important; outline: none !important; text-decoration: none !important; user-select: none !important; cursor: auto !important; }  .github-emoji img { height: 1.2em !important; width: 1.2em !important; position: absolute !important; left: 50% !important; top: 50% !important; transform: translate(-50%, -50%) !important; user-select: none !important; cursor: auto !important; } .github-emoji-fallback { color: inherit; } .github-emoji-fallback img { opacity: 0 !important; }</style>
+</head><body><div class="body_container"><div id="header"><div class="site-name"><h1 class="hidden">消息队列领域前沿分析</h1><a id="logo" href="/.">王军飞的随笔</a><p class="description">always be the best</p></div><div id="nav-menu"><a class="current" href="/."><i class="fa fa-home"> 首页</i></a><a href="/archives/"><i class="fa fa-archive"> 归档</i></a><a href="/about/"><i class="fa fa-user"> 关于</i></a><a href="/atom.xml"><i class="fa fa-rss"> 订阅</i></a></div></div><div class="pure-g" id="layout"><div class="pure-u-1 pure-u-md-3-4"><div class="content_container"><div class="post"><h1 class="post-title">消息队列领域前沿分析</h1><div class="post-meta">2021-03-15<span> | </span><span class="category"><a href="/categories/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97/">消息队列</a></span><script src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async></script><span id="busuanzi_container_page_pv"> | <span id="busuanzi_value_page_pv"></span><span> 阅读</span></span><span class="post-time"><span class="post-meta-item-text"> | </span><span class="post-meta-item-icon"><i class="fa fa-keyboard-o"></i><span class="post-count"> 1.6k</span><span class="post-meta-item-text"> 字</span></span></span><span class="post-time"> | <span class="post-meta-item-icon"><i class="fa fa-clock-o"></i><span class="post-count"> 5</span><span class="post-meta-item-text"> 分钟</span></span></span></div><a class="disqus-comment-count" href="/2021/03/15/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E9%A2%86%E5%9F%9F%E5%89%8D%E6%B2%BF%E8%B0%83%E7%A0%94/#vcomment"><span class="valine-comment-count" data-xid="/2021/03/15/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E9%A2%86%E5%9F%9F%E5%89%8D%E6%B2%BF%E8%B0%83%E7%A0%94/"></span><span> 条评论</span></a><div class="clear"><div class="toc-article" id="toc"><div class="toc-title">文章目录</div><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BA%91%E5%8E%9F%E7%94%9F"><span class="toc-number">1.</span> <span class="toc-text">云原生</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%91%E5%8E%9F%E7%94%9F%E5%AE%9A%E4%B9%89"><span class="toc-number">1.1.</span> <span class="toc-text">云原生定义</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Mafka%E7%9A%84%E4%BA%91%E5%8E%9F%E7%94%9F%E5%BB%BA%E8%AE%BE%E7%9B%AE%E6%A0%87"><span class="toc-number">1.2.</span> <span class="toc-text">Mafka的云原生建设目标</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%9B%86%E7%BE%A4SLA%E8%A6%81%E6%B1%82"><span class="toc-number">1.2.1.</span> <span class="toc-text">集群SLA要求:</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%9B%86%E7%BE%A4%E8%BF%90%E8%90%A5%E8%A6%81%E6%B1%82"><span class="toc-number">1.2.2.</span> <span class="toc-text">集群运营要求:</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%B5%81%E5%BC%8F%E8%AE%A1%E7%AE%97"><span class="toc-number">2.</span> <span class="toc-text">流式计算</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%9E%E6%97%B6%E8%AE%A1%E7%AE%97"><span class="toc-number">2.1.</span> <span class="toc-text">实时计算</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%8E%B0%E6%9C%89%E6%B5%81%E5%BC%8F%E8%AE%A1%E7%AE%97%E6%8A%80%E6%9C%AF"><span class="toc-number">2.2.</span> <span class="toc-text">现有流式计算技术</span></a></li></ol></li></ol></div></div><div class="post-content"><span id="more"></span>
+<h1 id="云原生"><a href="#云原生" class="headerlink" title="云原生"></a><a href="#%E4%BA%91%E5%8E%9F%E7%94%9F" title="云原生"></a>云原生</h1><h2 id="云原生定义"><a href="#云原生定义" class="headerlink" title="云原生定义"></a><a href="#%E4%BA%91%E5%8E%9F%E7%94%9F%E5%AE%9A%E4%B9%89" title="云原生定义"></a>云原生定义</h2><p>云原生组织(The Cloud Native Computing Foundation)在官方文档里对云原生做了定义: (参看官方文档):</p>
+<blockquote>
+<p>Cloud-native technologies empower organizations to build and run scalable applications in modern, dynamic environments such as public, private, and hybrid clouds. Containers, service meshes, microservices, immutable infrastructure, and declarative APIs exemplify this approach.RxJava</p>
+</blockquote>
+<blockquote>
+<p>翻译: 云原生技术赋予了企业在现代化、动态化的环境比如公有云、私有云以及混合云上开发和运营应用的能力。容器，service mesh，微服务，不可变基础设施以及声名式api都是典型的云原生技术。</p>
+</blockquote>
+<blockquote>
+<p>These techniques enable loosely coupled systems that are resilient, manageable, and observable. Combined with robust automation, they allow engineers to make high-impact changes frequently and predictably with minimal toil.</p>
+</blockquote>
+<blockquote>
+<p>翻译: 这类技术能让各系统松散的结合在一起，而且有弹性，可控制、可观测的。配合强壮的自动化工具，可以让工程师轻而易举的经常对系统做重大的变更。</p>
+</blockquote>
+<p>随着用户对应用(app，以下称应用)的需求不断增加，应用会变得越来越复杂，但用户的要求却会越来越高，他们希望应用能有更快的响应速度，全新的功能，以及零时间宕机。性能问题，重复出现的错误，演进速度慢越来越会让人难以接受，用户会轻易的转向竞争对手。</p>
+<p>云原生更多的是速度和敏捷。随着市场环境的不断变化，技术需要快速的支撑产品来抢占市场和商机，云原生就是这样的辅助技术。</p>
+<p>云原生的速度和敏捷特性来自于以下几个方面的支持:</p>
+<h2 id="Mafka的云原生建设目标"><a href="#Mafka的云原生建设目标" class="headerlink" title="Mafka的云原生建设目标"></a><a href="#Mafka%E7%9A%84%E4%BA%91%E5%8E%9F%E7%94%9F%E5%BB%BA%E8%AE%BE%E7%9B%AE%E6%A0%87" title="Mafka的云原生建设目标"></a>Mafka的云原生建设目标</h2><p>Mafka作为支撑服务(PaaS)之一，同样也需要满足云原生中速度和敏捷的要求，主要体现在以下几个方面:</p>
+<h3 id="集群SLA要求"><a href="#集群SLA要求" class="headerlink" title="集群SLA要求:"></a><a href="#%E9%9B%86%E7%BE%A4SLA%E8%A6%81%E6%B1%82" title="集群SLA要求:"></a>集群SLA要求:</h3><ol>
+<li><p>更快的扩容</p>
+<ul>
+<li>依托容器技术、自身架构的改造，当集群需要扩容，缩容时，集群能快速、简单的实现扩容</li>
+</ul>
+</li>
+<li><p>更快的容灾切换速度</p>
+<ul>
+<li>当机房出现断电等灾难时，客户端能实现快速的容灾切换速度。</li>
+</ul>
+</li>
+<li><p>更长的消息保存时间，更大的消息传输</p>
+<ul>
+<li><p>当用户需要更长、更久的消息保存时间时，依托自身的架构改造，能实现冷热消息的分离存储。</p>
+</li>
+<li><p>集群能实现更大消息(超过1M的消息体)生产和消费</p>
+</li>
+</ul>
+</li>
+<li><p>更小的集群宕机影响</p>
+<ul>
+<li>当集群出现宕机时，最小程度的减少对业务的影响，力求对用户无感知。</li>
+</ul>
+</li>
+<li><p>更快的宕机恢复</p>
+<ul>
+<li>当集群出现宕机时，集群能自动拉起新的机器(实例)来补充，快速恢复数据，满足用户的数据副本要求。</li>
+</ul>
+</li>
+</ol>
+<h3 id="集群运营要求"><a href="#集群运营要求" class="headerlink" title="集群运营要求:"></a><a href="#%E9%9B%86%E7%BE%A4%E8%BF%90%E8%90%A5%E8%A6%81%E6%B1%82" title="集群运营要求:"></a>集群运营要求:</h3><ol>
+<li><p>集群自动化，智能化运营</p>
+<ul>
+<li>集群自动化运营和管理，节点替换、宕机下线，流量均衡，负载均衡，版本升级等能做到“一键自动化”，智能化。</li>
+</ul>
+</li>
+<li><p>智能化用户辅助和预警</p>
+<ul>
+<li><p>用户队列发生积压时，能收集数据帮助用户快速定位问题，解决问题。</p>
+</li>
+<li><p>用户流量不均衡时，能提示用户更高效的生产和消费方式。</p>
+</li>
+<li><p>通过分析用户的消费速度和机器环境，提前预警队列消费积压等问题。</p>
+</li>
+</ul>
+</li>
+</ol>
+<h1 id="流式计算"><a href="#流式计算" class="headerlink" title="流式计算"></a><a href="#%E6%B5%81%E5%BC%8F%E8%AE%A1%E7%AE%97" title="流式计算"></a>流式计算</h1><h2 id="实时计算"><a href="#实时计算" class="headerlink" title="实时计算"></a><a href="#%E5%AE%9E%E6%97%B6%E8%AE%A1%E7%AE%97" title="实时计算"></a>实时计算</h2><p>数据的业务价值随着时间的流失而迅速降低，因此在数据发生后必须尽快对其进行计算和处理。而传统的大数据处理模式无法满足数据实时计算的需求。</p>
+<p>在诸如实时大数据分析、风控预警、实时预测、金融交易等诸多业务场景领域，批量处理对于上述对于数据处理时延要求苛刻的应用领域而言是完全无法胜任其业务需求的。</p>
+<h2 id="现有流式计算技术"><a href="#现有流式计算技术" class="headerlink" title="现有流式计算技术"></a><a href="#%E7%8E%B0%E6%9C%89%E6%B5%81%E5%BC%8F%E8%AE%A1%E7%AE%97%E6%8A%80%E6%9C%AF" title="现有流式计算技术"></a>现有流式计算技术</h2><p>storm、trident是比较早的流式计算技术，spark更新一些，现在最流行是Flink/Samza以及kafka stream一类非微批，每个事件逐一实时处理的新技术。</p>
+<p>各个技术之间的比较如下图:</p>
+<table>
+<thead>
+<tr>
+<th align="center">项目</th>
+<th align="center">Storm</th>
+<th align="center">Trident</th>
+<th align="center">Spark Streaming</th>
+<th align="center">Flink</th>
+<th align="center">Samza</th>
+<th align="center">Kafka streams</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">数据流模型</td>
+<td align="center">原生</td>
+<td align="center">微批</td>
+<td align="center">微批</td>
+<td align="center">原生</td>
+<td align="center">原生</td>
+<td align="center">原生</td>
+</tr>
+<tr>
+<td align="center">状态存储</td>
+<td align="center">不支持状态管理</td>
+<td align="center">本地存储，外部数据库</td>
+<td align="center">多种状态存储方式</td>
+<td align="center">多种状态存储方式</td>
+<td align="center">本地存储，Kafka主题</td>
+<td align="center">本地存储，日志变更主题</td>
+</tr>
+<tr>
+<td align="center">时延</td>
+<td align="center">低</td>
+<td align="center">高</td>
+<td align="center">高</td>
+<td align="center">低</td>
+<td align="center">低</td>
+<td align="center">低</td>
+</tr>
+<tr>
+<td align="center">保障机制</td>
+<td align="center">at-least-once</td>
+<td align="center">exactly-once</td>
+<td align="center">exactly-once</td>
+<td align="center">exactly-once</td>
+<td align="center">at-least-once</td>
+<td align="center">exactly-once</td>
+</tr>
+<tr>
+<td align="center">容错机制</td>
+<td align="center">record ack</td>
+<td align="center">record ack</td>
+<td align="center">RDD based，checkpoint</td>
+<td align="center">checkpoint</td>
+<td align="center">Kafka log-base</td>
+<td align="center">Kafka log</td>
+</tr>
+<tr>
+<td align="center">成熟度</td>
+<td align="center">作为较早开发的流处理框架，虽然有很多不足，但实际应用仍然比较广泛</td>
+<td align="center">当前比较流行的框架之一，Spark大环境</td>
+<td align="center">较新的流处理框架，性能非常优秀，阿里应用并做相应修改Blink</td>
+<td align="center">基于Kafka作为数据源</td>
+<td align="center">完全基于Kafka集群实现</td>
+<td align="center"></td>
+</tr>
+<tr>
+<td align="center">定位</td>
+<td align="center">框架</td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center">库</td>
+</tr>
+</tbody></table>
+<p>由上图可见，Flink/Samza/Kafka Stream典型的特征是，高吞吐，低延时，实时流式处理。但三者又有不同点，Flink可以基于多种数据存储做计算，Samza/Kafka Stream都是以kafka为数据源做计算。</p>
+<p>但Kafka Stream在这里独有三个优势:</p>
+<ol>
+<li><p>Kafka Stream非常的轻量级，可以应用到微服务、IOT等实时流式计算场景:</p>
+<ul>
+<li>Samza/Flink都是计算框架，需要部署一个集群，将自己的流式作业上传到集群处理，kafaStreams是lib库，业务程序集成后就可以可开始流式计算。</li>
+</ul>
+</li>
+<li><p>KafkaStreams是本地lib库，开发迭代成本低</p>
+<ul>
+<li>意味着RD可以在本地开发和测试自己的Kafka Stream流式任务，Samza/Flink等需要将服务部署到集群上，开发者很难了解框架的具体运行方式，从而使得调试成本高，并且使用受限.</li>
+</ul>
+</li>
+<li><p>接入方便，使用成本低</p>
+<ul>
+<li>Mafka在公司内广泛使用，业务已经将消息和数据发往了Mafka，如果Mafka推出stream流式计算，业务只要升级Mafka client版本，既可拥有流式计算能力，相对业务来说，使用流式计算技术的成本非常低。</li>
+</ul>
+</li>
+</ol>
+</div><div class="post-copyright"><script type="text/javascript" src="/js/copyright.js?v=1.0.0" successtext="复制成功！"></script><link rel="stylesheet" type="text/css" href="/css/copyright.css?v=1.0.0"><p><span>本文标题：</span>消息队列领域前沿分析</p><p><span>文章作者：</span>王军飞 jonefeewang@outlook.com</p><p><span>发布时间：</span>2021-03-15</p><p><span>最后更新：</span>2024-03-24</p><p><span>原始链接：</span><a href="/2021/03/15/消息队列领域前沿调研/">https://www.wangjunfei.com/2021/03/15/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E9%A2%86%E5%9F%9F%E5%89%8D%E6%B2%BF%E8%B0%83%E7%A0%94/</a><span class="copy-path"><i class="fa fa-clipboard" data-clipboard-text="https://www.wangjunfei.com/2021/03/15/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E9%A2%86%E5%9F%9F%E5%89%8D%E6%B2%BF%E8%B0%83%E7%A0%94/"></i></span></p><p><span>版权声明：</span>原创文章转载请注明出处</p></div><br><script type="text/javascript" src="/js/share.js?v=1.0.0" async></script><a class="article-share-link" data-url="https://www.wangjunfei.com/2021/03/15/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E9%A2%86%E5%9F%9F%E5%89%8D%E6%B2%BF%E8%B0%83%E7%A0%94/" data-id="clu4tf7cq001wjts69s0b70da" data-qrcode="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASYAAAEmCAAAAADqr2IGAAAEg0lEQVR42u3aS27kOBAFQN//0p51o8f2e5lsQJRDKwNVJZEhA8n8fHzE12d8ffXbv+/z1af5SvL7t08ZXpgwYcKE6ZFMybbzT7/f/PesyVO+38Xsm9Erx4QJEyZMlzPlD042kEDnS//qnpvv53vHhAkTJky/mSlPVmeJa/IaZuEfEyZMmDBhym+XLHRWWp2l4vt0GhMmTJgwvY8pv12eZEaPH3G0r+3A/TFhwoQJ07VMeWB+39//ZL4JEyZMmDA9humzvNpUeTa6uikctyE/2jUmTJgwYbqWKQ+Q7cDNpsCaJMx5yjp7LiZMmDBhehPTPvQm46qbLHIzvjNrXg7TY0yYMGHC9DCmPPlMAm17LMiJk9bpplUZ9XsxYcKECdOFTKf6d7NF5MXZ/X1mBwhMmDBhwnQ7U9uqnC06T6f3Kets5T/cBxMmTJgwXc7UppRtMrzn3pePZ6/kj/kmTJgwYcL0CqZZaTVJnpPUeg+3HyGKauGYMGHChOkqpn0IzxuB+RLbUZ4DKe73M7yYMGHChOlCpharLbMmpd42xT2V6OZHFkyYMGHCdDtTO76zHwBNUGYHgk3ynKfWmDBhwoTpFqZ/UWCdpbhJ+J+9wgPHCEyYMGHC9Aqmtrl4KrnN19COpbYDRl+uARMmTJgwXcuUP2zf4Gw3/xlfbTE6PwB9JBcmTJgwYXowU+LXfmdWrp0F5llxuX39mDBhwoTpXqbZdXjw5VBLdfaCc3RMmDBhwnQ706y8e6pQ24b2WXLb7gsTJkyYMN3OtBmvaRc3a0Du09r9HjFhwoQJ0zuY8sDZHhRmQzObMu6pZ/0w34QJEyZMmK5iaht4bQDeHBc2IzibgvKBPicmTJgwYXoMUxuMvy+Mzo4XeU06CuTroaLVuQkTJkyYMD2MqQ3Gs/C8L8tu2pzDHWHChAkTpsuZZo3DWWo6GxhKWpJ5QTk/FmDChAkTpt/AlA/uFA+eFVvXo0LJHv/nU0yYMGHC9FKm9ohwaoBmX9LdpM2YMGHChOn3MLVjOknS2wb7WcjPjzJRoo4JEyZMmF7B1AbgJJS2QzNnt5e/+B/WgwkTJkyYXsE0G4KZtRvbdHo2gtM2XOvUFxMmTJgwPZ6pPQq0v8rHQPM2Z1v2bQvTmDBhwoTpTUynmoJtspo3Jv91Kh79K2DChAkTphcxtalge+LInzIbvimalLkDJkyYMGG6nCkfqZltZlNQ3pR9jxV2MWHChAnTK5jyMJ9seBb483u2h4D8Bf/Q9cWECRMmTFcxzYD2IXn221MJ84ELEyZMmDBdwjQbZ5kF9XawZnY0OXXPPz7FhAkTJkzXMs1i4iZ6tsnnpsib3/8AECZMmDBhejDT5hCwKea2YXhW/J01bofvHxMmTJgwPZipHXZJyr6nBm42aWp7lBmO72DChAkTptcxzYZ1Th0jDg/iJCaYMGHChOkXM+1bhm1BNl9/e0D5cuWYMGHChOlypnzbbeE1SURnyW2y1dk3V+1MTJgwYcL0MKY2FWxvmh8Okk3OxoPaMdzhhQkTJkyYnsX0H7vD6Xp0ufz5AAAAAElFTkSuQmCC">分享</a><div class="tags"><ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/kafka/" rel="tag">kafka</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E4%BA%91%E5%8E%9F%E7%94%9F/" rel="tag">云原生</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E6%B5%81%E5%BC%8F%E8%AE%A1%E7%AE%97/" rel="tag">流式计算</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97/" rel="tag">消息队列</a></li></ul></div><div class="post-nav"><a class="pre" href="/2021/03/16/%E3%80%8A%E5%8D%8E%E4%B8%BA%E7%81%B0%E5%BA%A6%E7%AE%A1%E7%90%86%E6%B3%95%E3%80%8B%E9%98%85%E8%AF%BB-%E5%89%8D%E8%A8%80/">《华为灰度管理法》阅读-前言</a><a class="next" href="/2020/11/02/%E3%80%8A%E9%A2%86%E5%AF%BC%E6%A2%AF%E9%98%9F%E3%80%8B-%E7%AC%AC%E4%B8%89%E7%AB%A0-%E4%BB%8E%E7%AE%A1%E7%90%86%E4%BB%96%E4%BA%BA%E5%88%B0%E7%AE%A1%E7%90%86%E7%BB%8F%E7%90%86%E4%BA%BA%E5%91%98/">《领导梯队》-第三章-从管理他人到管理经理人员</a></div><div class="nofancybox" id="vcomment"></div><script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script><script src="//unpkg.com/valine@latest/dist/Valine.min.js"></script><script>var notify = 'false' == 'true' ? true : false;
+var verify = 'true' == 'true' ? true : false;
+var GUEST_INFO = ['nick','mail','link'];
+var guest_info = 'nick,mail,link'.split(',').filter(function(item){
+  return GUEST_INFO.indexOf(item) > -1
+});
+guest_info = guest_info.length == 0 ? GUEST_INFO :guest_info;
+window.valine = new Valine({
+  el:'#vcomment',
+  notify:notify,
+  verify:verify,
+  appId:'FNjCNRwQqC3sTPP04DfRFIk9-gzGzoHsz',
+  appKey:'LzCq5t6a6RTkwXQVr8xLk0yj',
+  serverURLs:'',
+  placeholder:'请理性评论',
+  avatar:'monsterid',
+  guest_info:guest_info,
+  pageSize:'10'
+})
+</script></div></div></div><div class="pure-u-1 pure-u-md-1-4"><div id="sidebar"><div class="widget"><form class="search-form" action="//www.baidu.com/baidu" method="get" accept-charset="utf-8" target="_blank"><input type="search" name="word" maxlength="20" placeholder="Search"/><input type="hidden" name="si" value="https://www.wangjunfei.com"/><input name="tn" type="hidden" value="bds"/><input name="cl" type="hidden" value="3"/><input name="ct" type="hidden" value="2097152"/><input name="s" type="hidden" value="on"/></form></div><div class="widget"><div class="author-info"><a class="info-avatar" href="/about/" title="关于"><img class="nofancybox" src="/img/avatar.png"/></a><p>Always be the best</p><a class="info-icon" href="mailto:jonefeewang@outlook.com" title="Email" target="_blank" style="margin-inline:5px"> <i class="fa fa-envelope-square" style="margin-inline:5px"></i></a><a class="info-icon" href="https://github.com/jonefeewang" title="Github" target="_blank" style="margin-inline:5px"> <i class="fa fa-github-square" style="margin-inline:5px"></i></a><a class="info-icon" href="/atom.xml" title="RSS" target="_blank" style="margin-inline:5px"> <i class="fa fa-rss-square" style="margin-inline:5px"></i></a></div></div><div class="widget"><div class="widget-title"><i class="fa fa-folder-o"> 分类</i></div><ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%88%86%E5%B8%83%E5%BC%8F%E6%8A%80%E6%9C%AF/">分布式技术</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%8A%A1%E8%99%9A-%E4%BA%A4%E6%B5%81%E6%B2%9F%E9%80%9A/">务虚-交流沟通</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%8A%A1%E8%99%9A-%E7%AE%A1%E7%90%86%E6%96%B9%E6%B3%95%E8%AE%BA/">务虚-管理方法论</a><span class="category-list-count">8</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97/">消息队列</a><span class="category-list-count">9</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E7%A3%81%E7%9B%98%E8%AF%BB%E5%86%99%E4%BC%98%E5%8C%96/">磁盘读写优化</a><span class="category-list-count">1</span></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-star-o"> 标签</i></div><div class="tagcloud"><a href="/tags/Apache-Pulsar/" style="font-size: 15px;">Apache Pulsar</a> <a href="/tags/Apache-Bookkeeper/" style="font-size: 15px;">Apache Bookkeeper</a> <a href="/tags/Apache-Kafka/" style="font-size: 15px;">Apache Kafka</a> <a href="/tags/Apache-pulsar-%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97-kafka-RocketMQ/" style="font-size: 15px;">Apache pulsar 消息队列 kafka RocketMQ</a> <a href="/tags/kafka-raft-kraft-zookeeper/" style="font-size: 15px;">kafka raft kraft zookeeper</a> <a href="/tags/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97/" style="font-size: 15px;">消息队列</a> <a href="/tags/rocketmq/" style="font-size: 15px;">rocketmq</a> <a href="/tags/kafka/" style="font-size: 15px;">kafka</a> <a href="/tags/pulsar/" style="font-size: 15px;">pulsar</a> <a href="/tags/%E5%8A%A1%E8%99%9A-%E7%AE%A1%E7%90%86%E6%96%B9%E6%B3%95%E8%AE%BA/" style="font-size: 15px;">务虚-管理方法论</a> <a href="/tags/%E5%8D%8E%E4%B8%BA/" style="font-size: 15px;">华为</a> <a href="/tags/%E7%AE%A1%E7%90%86%E6%96%B9%E6%B3%95%E8%AE%BA/" style="font-size: 15px;">管理方法论</a> <a href="/tags/%E7%AE%A1%E7%90%86/" style="font-size: 15px;">管理</a> <a href="/tags/%E5%8A%A1%E8%99%9A-%E9%A2%86%E5%AF%BC%E6%A2%AF%E9%98%9F/" style="font-size: 15px;">务虚-领导梯队</a> <a href="/tags/%E5%8A%A1%E8%99%9A/" style="font-size: 15px;">务虚</a> <a href="/tags/%E5%8D%8F%E4%BD%9C/" style="font-size: 15px;">协作</a> <a href="/tags/%E8%BD%AF%E7%B4%A0%E8%B4%A8/" style="font-size: 15px;">软素质</a> <a href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F%E6%8A%80%E6%9C%AF/" style="font-size: 15px;">分布式技术</a> <a href="/tags/zookeeper/" style="font-size: 15px;">zookeeper</a> <a href="/tags/consensus-algorithm/" style="font-size: 15px;">consensus algorithm</a> <a href="/tags/zab/" style="font-size: 15px;">zab</a> <a href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F%E5%8D%8F%E8%AE%AE/" style="font-size: 15px;">分布式协议</a> <a href="/tags/%E4%B8%80%E8%87%B4%E6%80%A7%E7%AE%97%E6%B3%95/" style="font-size: 15px;">一致性算法</a> <a href="/tags/%E6%96%B9%E6%B3%95%E8%AE%BA-%E8%BD%AF%E7%B4%A0%E8%B4%A8%E6%8F%90%E5%8D%87/" style="font-size: 15px;">方法论 软素质提升</a> <a href="/tags/kafka-netty-%E6%97%B6%E9%97%B4%E8%BD%AE/" style="font-size: 15px;">kafka netty 时间轮</a> <a href="/tags/%E4%BA%91%E5%8E%9F%E7%94%9F/" style="font-size: 15px;">云原生</a> <a href="/tags/%E6%B5%81%E5%BC%8F%E8%AE%A1%E7%AE%97/" style="font-size: 15px;">流式计算</a> <a href="/tags/%E7%A3%81%E7%9B%98%E8%AF%BB%E5%86%99%E4%BC%98%E5%8C%96/" style="font-size: 15px;">磁盘读写优化</a> <a href="/tags/mysql/" style="font-size: 15px;">mysql</a></div></div><div class="widget"><div class="widget-title"><i class="fa fa-file-o"> 最近文章</i></div><ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2023/12/25/Apache-Pulsar%E7%9A%84%E5%AD%98%E5%82%A8%E6%A8%A1%E5%9E%8B/">Apache Pulsar的存储模型</a></li><li class="post-list-item"><a class="post-list-link" href="/2023/09/15/Apache-pulsar%E5%AF%B9zookeeper%E7%9A%84%E4%BE%9D%E8%B5%96%E5%92%8C%E5%8E%BB%E9%99%A4%E5%88%86%E6%9E%90-%E4%BA%8C/">Apache pulsar对zookeeper的依赖和去除分析(二)</a></li><li class="post-list-item"><a class="post-list-link" href="/2023/06/15/Apache-pulsar%E5%AF%B9zookeeper%E7%9A%84%E4%BE%9D%E8%B5%96%E5%92%8C%E5%8E%BB%E9%99%A4%E5%88%86%E6%9E%90-%E4%B8%80/">Apache pulsar对zookeeper的依赖和去除分析(一)</a></li><li class="post-list-item"><a class="post-list-link" href="/2023/04/10/%E6%97%B6%E9%97%B4%E8%BD%AE%E7%AE%97%E6%B3%95%E5%88%86%E6%9E%90%E5%92%8C%E5%BA%94%E7%94%A8/">时间轮算法分析和应用</a></li><li class="post-list-item"><a class="post-list-link" href="/2021/12/01/Kafka%E5%8E%BBZookeeper%E6%8F%AD%E7%A7%98/">Kafka去Zookeeper揭秘</a></li><li class="post-list-item"><a class="post-list-link" href="/2021/09/15/PRFAQ%E7%BC%96%E5%86%99%E8%A7%84%E8%8C%83/">「转」PRFAQ编写规范</a></li><li class="post-list-item"><a class="post-list-link" href="/2021/09/13/%E5%87%A0%E7%A7%8D%E5%B8%B8%E8%A7%81%E7%9A%84%E5%B7%A5%E4%BD%9C%E6%96%B9%E6%B3%95%E8%AE%BA%E6%B1%87%E9%9B%86/">「转」几种常见的工作方法论汇集</a></li><li class="post-list-item"><a class="post-list-link" href="/2021/08/14/%E8%BD%AF%E7%B4%A0%E8%B4%A8%E8%9E%BA%E6%97%8B%E4%B8%8A%E5%8D%87/">软素质螺旋上升</a></li><li class="post-list-item"><a class="post-list-link" href="/2021/07/22/Mafka%E5%85%A8%E9%93%BE%E8%B7%AF%E5%BC%B9%E6%80%A7%E4%BC%B8%E7%BC%A9%E6%BC%94%E8%BF%9B%E7%AD%96%E7%95%A5/">Mafka全链路弹性伸缩演进策略</a></li><li class="post-list-item"><a class="post-list-link" href="/2021/07/14/Mafka-LRP/">Mafka长期发展规划(LRP)</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-external-link"> 友情链接</i></div><ul></ul><a href="http://www.example1.com/" title="site-name1" target="_blank">site-name1</a></div></div></div><div class="pure-u-1 pure-u-md-3-4"><div id="footer">Copyright © 2024 <a href="/." rel="nofollow">王军飞的随笔.</a> Powered by<a rel="nofollow" target="_blank" href="https://hexo.io"> Hexo.</a><a rel="nofollow" target="_blank" href="https://github.com/tufu9441/maupassant-hexo"> Theme</a> by<a rel="nofollow" target="_blank" href="https://github.com/pagecho"> Cho.</a></div></div></div><a class="show" id="rocket" href="#top"></a><script type="text/javascript" src="/js/totop.js?v=1.0.0" async></script><script type="text/javascript" src="//lib.baomitu.com/fancybox/latest/jquery.fancybox.min.js"></script><script type="text/javascript" src="/js/fancybox.js?v=1.0.0"></script><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/fancybox/latest/jquery.fancybox.min.css"><script type="text/javascript" src="/js/copycode.js?v=1.0.0" successtext="复制成功！"></script><link rel="stylesheet" type="text/css" href="/css/copycode.css?v=1.0.0"><script type="text/javascript" src="/js/codeblock-resizer.js?v=1.0.0"></script><script type="text/javascript" src="/js/smartresize.js?v=1.0.0"></script></div></body></html>
