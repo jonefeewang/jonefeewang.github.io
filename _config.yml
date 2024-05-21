@@ -26,7 +26,7 @@ baidu_url_submit:
 
 # URL
 ## If your site is put in a subdirectory, set url as 'http://yoursite.com/child' and root as '/child/'
-url: https://www.wangjunfei.com
+url: https://wangjunfei.com
 root: /
 permalink: :year/:month/:day/:title/
 permalink_defaults:
