@@ -17,26 +17,22 @@ toc: true
 ---
 
 ## **TL;DR:**
+1.**Codebase**: [GitHub Repository](https://github.com/jonefeewang/stonemq)  
 
-1. **Codebase**: [GitHub Repository](https://github.com/jonefeewang/stonemq)  
-
-2. **Current Features (v0.1.0)**:  
-
+2.**Current Features (v0.1.0)**:  
    - Supports single-node message sending and receiving.  
    - Implements group consumption functionality.  
 
-3. **Goal**:  
-
+3.**Goal**:  
    - Aims to replace Kafka's server-side functionality in massive-scale queue cluster.  
    - Focused on reducing operational costs while improving efficiency.  
    - Fully compatible with Kafka's client-server communication protocol, enabling seamless client-side migration without requiring modifications.  
 
-4. **Technology**:  
-
+4.**Technology**:  
    - Entirely developed in **Rust**.  
    - Utilizes **Rust Async** and **Tokio** to achieve high performance, concurrency, and scalability.  
 
-5. **Preliminary Performance Testing**:  
+5.**Preliminary Performance Testing**:  
 
    - **Setup**: The comparison between Kafka 2.6.0 and StoneMQ (v0.1.0) was conducted using Kafka 2.6.0's built-in producer benchmark tool. The tests were performed on an Apple 2023 MacBook Pro (12 CPU cores, 18 GPU cores, 512GB SSD).
 
@@ -64,7 +60,7 @@ Stonemq aims to outperform Kafka in scenarios with massive-scale queue clusters,
 
 In use cases involving large clusters with countless queues—particularly in enterprise business services and public cloud services—there can be tens of thousands of partitions and partition leaders. Regardless of whether the queues contain messages, the volume of messages, or the flow rate, the presence or absence of active consumers in each partition poses a significant burden for cluster operators. Partition growth negatively impacts cluster throughput, while node failures or restarts often result in partition leader and controller switching, creating critical operational challenges. Stonemq addresses these inefficiencies.
 
-Cluster performance should remain consistent regardless of partition growth. Queues with varying traffic volumes need consolidation to enable more efficient message flow—akin to containerized shipping for multiple clients. This is precisely the vision of Stonemq. While solutions like Pulsar utilize journaling for centralized message handling, Stonemq seeks to retain Kafka’s replication , which simplifies and standardizes cluster operation and maintenance.We believe this protocol is both straightforward and highly efficient, forming the backbone of our solution.Additionally, by reusing Kafka's client-server communication protocol, StoneMQ ensures seamless migration without requiring any changes to the user's client applications. This approach significantly reduces adoption costs for users, enabling a smooth transition to StoneMQ while retaining the familiar and reliable interface they are accustomed to. 
+Cluster performance should remain consistent regardless of partition growth. Queues with varying traffic volumes need consolidation to enable more efficient message flow—akin to containerized shipping for multiple clients. This is precisely the vision of Stonemq. While solutions like Pulsar utilize journaling for centralized message handling, Stonemq seeks to retain Kafka's replication , which simplifies and standardizes cluster operation and maintenance.We believe this protocol is both straightforward and highly efficient, forming the backbone of our solution.Additionally, by reusing Kafka's client-server communication protocol, StoneMQ ensures seamless migration without requiring any changes to the user's client applications. This approach significantly reduces adoption costs for users, enabling a smooth transition to StoneMQ while retaining the familiar and reliable interface they are accustomed to. 
 
 ## Why Another Message Queue?
 
@@ -74,9 +70,9 @@ Apache Kafka and Apache Pulsar are both outstanding message queue solutions, wid
 
 However, based on my years of experience in message queue development (having led the development of Mafka for over 4 years and DDMQ for more than 1 year), as well as my expertise in managing and operating large enterprise clusters (exceeding 4,000 virtual machines or containers) with 99.999% availability, I believe these products are not without significant flaws. It is entirely possible to create a better solution.  
 
-Kafka's high throughput and low latency are exceptional. Its distributed design is highly reasonable, and its underlying principles are relatively simple, making it an excellent platform for enterprise-level secondary development. With the integration of auxiliary systems, it’s possible to build highly available enterprise-grade clusters. For a detailed analysis of Kafka’s strengths and weaknesses, you can refer to my earlier blog post on industry research into message queues. Here, I’ll briefly summarize some key points.  
+Kafka's high throughput and low latency are exceptional. Its distributed design is highly reasonable, and its underlying principles are relatively simple, making it an excellent platform for enterprise-level secondary development. With the integration of auxiliary systems, it's possible to build highly available enterprise-grade clusters. For a detailed analysis of Kafka's strengths and weaknesses, you can refer to my earlier blog post on industry research into message queues. Here, I'll briefly summarize some key points.  
 
-### 1. Advantages of Kafka:
+### Advantages of Kafka:
 
 1. **High Throughput and Low Latency**:  
    Kafka excels in throughput and latency due to its use of sequential file I/O for reading and writing messages. This efficient approach achieves exceptional performance with high speeds and minimal delay.  
@@ -90,9 +86,7 @@ Kafka's high throughput and low latency are exceptional. Its distributed design 
 4. **No Java GC-related Issues**:  
    As Kafka writes message data directly to disk, without storing or caching it in memory, it minimizes Java memory usage. This avoids the common garbage collection (GC) problems encountered with Java-based systems.
 
----
-
-### 2. Disadvantages of Kafka:
+### Disadvantages of Kafka:
 
 1. **System Complexity**:  
    Kafka's distributed multi-active mechanism introduces complexity, particularly around intra-cluster communication, leader election, partition leader management, topic lifecycle management, and message cleanup. These inter-node RPCs and consistency mechanisms across a complex distributed system create challenges in local data maintenance and pose significant bug risks.
@@ -105,20 +99,18 @@ Kafka's high throughput and low latency are exceptional. Its distributed design 
 
 In addition to the architectural analysis above, several issues become glaringly apparent when deploying large-scale clusters in real-world production environments:
 
----
-
-### 3. Exponential Growth of Partitions and Replicas:
+### Exponential Growth of Partitions and Replicas:
 
 1. **Traffic Isolation Leading to Rapid Growth**:  
    To meet business demands, traffic isolation has become a standard requirement in the industry. This often includes isolating environments (e.g., prod, stage, release) or adopting regional/zone-based isolation (commonly termed "set-based" in many companies). A straightforward and efficient way to achieve this is by leveraging queues to simulate separation. However, in a unified company-wide cluster, this requirement is used by various departments, both large and small, leading to exponential proliferation of queues. This queue expansion results in a corresponding increase in partitions, which subsequently causes a multipliers-level surge in replica counts.
 
 2. **Consumption Model Leading to Growth**:  
-   Kafka’s consumption model enforces that a queue's partition can only be consumed by a single consumer. When users produce messages using hash keys or when the number of consumers increases, additional partitions must be created to accommodate new consumers. In such scenarios, partition resource consumption does not stem from increased traffic but simply from the growing number of consumers. This tight coupling between the number of consumers and partitions significantly drives up partition counts.
+   Kafka's consumption model enforces that a queue's partition can only be consumed by a single consumer. When users produce messages using hash keys or when the number of consumers increases, additional partitions must be created to accommodate new consumers. In such scenarios, partition resource consumption does not stem from increased traffic but simply from the growing number of consumers. This tight coupling between the number of consumers and partitions significantly drives up partition counts.
 
 The exponential growth of partitions and replicas leads directly to an increase in the number of fragmented files being written, compounding performance issues. For instance, if a single machine hosts over 3,000 partitions, with three replicas managed, this often approaches 10,000 partitions. This has several critical repercussions:
 
 1. **Disk Random I/O caused by Fragmented Files**:  
-   Writing thousands of fragmented files concurrently poses significant challenges. Leader replicas directly influence client-side sending latency as they are written, while follower replica writes—especially with ack=-1 settings—also impact leader latencies. Even during client-side reads (limited to leader replicas), the increased partition count exacerbates random read problems. It’s important to note that even with SSDs, excessive random I/O severely reduces disk performance.  
+   Writing thousands of fragmented files concurrently poses significant challenges. Leader replicas directly influence client-side sending latency as they are written, while follower replica writes—especially with ack=-1 settings—also impact leader latencies. Even during client-side reads (limited to leader replicas), the increased partition count exacerbates random read problems. It's important to note that even with SSDs, excessive random I/O severely reduces disk performance.  
 
 2. **Page Cache Pollution**:  
    This issue is inherent to Kafka and escalates sharply with the growth of replica counts on a single machine. Both reads and writes rely on the page cache, but since page cache size is limited, an increase in fragmented files results in heightened contention for cache resources, degrading performance.  
@@ -126,29 +118,21 @@ The exponential growth of partitions and replicas leads directly to an increase 
 3. **Flush IOPS Costs During Log Segment Rolls**:  
    Even though these fragmented files are not flushed during writes—relying on follower replicas for durability—Kafka performs a flush when log segments are rolled. This flush operation directly consumes IOPS.
 
----
-
-### 4. Interaction Between Large and Small Queues:
+### Interaction Between Large and Small Queues:
 
 When two queues with dramatically different traffic patterns (e.g., one with 10x or more throughput than the other) coexist, this imbalance becomes problematic. Large queues require more consumers, which further increases the number of partitions and replicas, ultimately impacting the latency and performance of smaller queues.
 
----
-
-### 5. Unexpected Backlogs and Reprocessing:
+### Unexpected Backlogs and Reprocessing:
 
 This issue typically arises when slow-consuming queues suddenly resume consumption. If the necessary hot data is no longer in the page cache, data must be fetched from disk, consuming significant IOPS. This behavior disrupts the system's performance and can lead to unexpected delays.
 
----
-
-### 6. Poor Controllability of Page Cache:
+### Poor Controllability of Page Cache:
 
 Since page cache is managed by the operating system, there is minimal control available to users. Configurations are typically limited to tuning parameters like dirty page ratios or flush intervals, without granular control. Users seeking control over caching must resort to application-side caching. However, Java-based languages (such as Java, Scala, or Groovy) often lack the efficiency of system programming languages like C, C++, or Rust when managing memory caches. This inefficiency can result in complications such as memory leaks or Out of Memory (OOM) errors, further deteriorating system reliability.
 
 Pulsar is another highly popular message queue product with a large and active community. The advantages and disadvantages of Pulsar's architectural design have been discussed in detail in my previous blog, and a brief summary is provided below:
 
----
-
-### 7. Advantages of Pulsar:
+### Advantages of Pulsar:
 
 1. **Reduced Latency from Slow Nodes**:  
    Pulsar allows messages to be stored on the fastest two nodes, avoiding the latency impact caused by slower nodes during writes.
@@ -157,14 +141,12 @@ Pulsar is another highly popular message queue product with a large and active c
    When new Bookie nodes are added, they can quickly become part of the Qw (quorum write) group to receive messages, enabling rapid cluster expansion.
 
 3. **No Risk of Split-Brain**:  
-   Since Pulsar’s architecture lacks the concept of a leader, it avoids the risk of split-brain scenarios caused by network partitioning, which Kafka is susceptible to.
+   Since Pulsar's architecture lacks the concept of a leader, it avoids the risk of split-brain scenarios caused by network partitioning, which Kafka is susceptible to.
 
----
-
-### 8. Disadvantages of Pulsar:
+### Disadvantages of Pulsar:
 
 1. **Complex Architecture**:  
-   Pulsar’s architecture consists of three components: Pulsar, BookKeeper, and RocksDB. Data is distributed across these components, increasing complexity.
+   Pulsar's architecture consists of three components: Pulsar, BookKeeper, and RocksDB. Data is distributed across these components, increasing complexity.
 
 2. **Complex Data Storage Model**:  
    The smallest storage unit, a fragment, can have its Qa (quorum acknowledgement) spread across multiple Bookies. This results in a massive number of fragmented and scattered fragments throughout the cluster, making maintenance highly complex. Additionally, reading data requires hopping across multiple machines, leading to lower efficiency.
@@ -178,18 +160,16 @@ Pulsar is another highly popular message queue product with a large and active c
 5. **Data Recovery After Node Failure**:  
    When a Bookie node fails, a significant amount of data must still be moved to create new replicas for disaster recovery. While this is similar to Kafka, Pulsar performs better in that incremental data is not at risk. After a single-node failure, Pulsar can quickly form a new replica group, whereas Kafka must redistribute replicas, leaving both incremental and historical data with reduced redundancy until recovery is complete.
 
----
-
-### 9. Pulsar Issues in Real-World Production Environments:
+### Pulsar Issues in Real-World Production Environments:
 
 1. **Strong Dependency on Zookeeper**:  
-   This has been extensively discussed in my previous blog, *"Pulsar and the Problem of Removing Zookeeper"*. Pulsar’s reliance on Zookeeper is deeply ingrained in its architecture. To ensure consistency, BookKeeper prevents two clients from writing to the same ledger simultaneously. This consistency is enforced by the client relying on Zookeeper’s global coordination capabilities. This dependency is far stronger than Kafka’s reliance on Zookeeper. In Kafka, consistency is managed by electing a single controller node during initialization, which oversees cluster-wide operations. As long as the controller remains operational, Kafka can temporarily function without Zookeeper (albeit with some minor limitations, such as delayed leaderAndIsr notifications and broker state updates). This makes Kafka’s dependency on Zookeeper much less critical in comparison.
+   This has been extensively discussed in my previous blog, "Pulsar and the Problem of Removing Zookeeper". Pulsar's reliance on Zookeeper is deeply ingrained in its architecture. To ensure consistency, BookKeeper prevents two clients from writing to the same ledger simultaneously. This consistency is enforced by the client relying on Zookeeper's global coordination capabilities. This dependency is far stronger than Kafka's reliance on Zookeeper. In Kafka, consistency is managed by electing a single controller node during initialization, which oversees cluster-wide operations. As long as the controller remains operational, Kafka can temporarily function without Zookeeper (albeit with some minor limitations, such as delayed leaderAndIsr notifications and broker state updates). This makes Kafka's dependency on Zookeeper much less critical in comparison.
 
 2. **Memory Leaks and OOM Issues**:  
    Both Pulsar brokers and BookKeeper heavily rely on in-memory caching to improve message read and write efficiency. Many of these caches use off-heap memory. During machine upgrades or maintenance, even small memory leaks can accumulate over time, causing off-heap memory usage to gradually rise and eventually lead to OOM errors. Identifying these memory leaks and performing upgrades and fixes requires significant effort.
 
 3. **Loose Architecture with Multiple Components**:  
-   Compared to Kafka, Pulsar’s architecture is far more fragmented and challenging to maintain. Pulsar requires familiarity with multiple systems, including Pulsar Broker, BookKeeper, BookKeeper Client (a critical component), and RocksDB. This increases development costs significantly. Similarly, operational and maintenance costs are higher, as these systems require coordinated upgrades and maintenance. In contrast, Kafka’s single distributed system is far simpler. While Kafka’s distributed design is complex, it is well-structured and easier to follow, resulting in much lower maintenance overhead. By comparison, Kafka feels like a paradise in terms of simplicity and manageability.
+   Compared to Kafka, Pulsar's architecture is far more fragmented and challenging to maintain. Pulsar requires familiarity with multiple systems, including Pulsar Broker, BookKeeper, BookKeeper Client (a critical component), and RocksDB. This increases development costs significantly. Similarly, operational and maintenance costs are higher, as these systems require coordinated upgrades and maintenance. In contrast, Kafka's single distributed system is far simpler. While Kafka's distributed design is complex, it is well-structured and easier to follow, resulting in much lower maintenance overhead. By comparison, Kafka feels like a paradise in terms of simplicity and manageability.
 
 So, after all this discussion, is there truly a perfect message queue system that can combine the advantages of these technologies while eliminating their disadvantages? Throughout my years of development and maintenance experience, I have constantly pondered this question: can we do better?  
 
@@ -211,12 +191,10 @@ However, the system limits the total number of partitions to a small, fixed numb
 
 The write disk serves as a **short-term storage** layer, facilitating efficient writes and replication between primary and replica partitions. Meanwhile, the read disk functions as the **long-term storage** layer, storing messages in their final physical queues. This separation ensures that writes and replications are optimized for throughput, while reads are handled independently.  
 
----
-
 ### Key Design Inspirations and Benefits:
 
 1. **Kafka-inspired Write and Replication Mechanism**:  
-   By adopting Kafka’s leader-follower replication model, the system ensures high availability and fault tolerance. However, to address Kafka’s scalability challenges caused by excessive partition growth, all queues are consolidated into a limited number of partitions. This reduces the overall partition count in the cluster, significantly improving write and replication throughput.
+   By adopting Kafka's leader-follower replication model, the system ensures high availability and fault tolerance. However, to address Kafka's scalability challenges caused by excessive partition growth, all queues are consolidated into a limited number of partitions. This reduces the overall partition count in the cluster, significantly improving write and replication throughput.
 
 2. **Pulsar-inspired Read-Write Separation**:  
    The system separates read and write operations across two disks. Write operations are concentrated on the write disk (`/disk1`), while read operations are handled by the read disk (`/disk2`). This separation eliminates the mutual interference between reads and writes, ensuring that write throughput is unaffected by read operations and vice versa.  
@@ -228,9 +206,7 @@ The write disk serves as a **short-term storage** layer, facilitating efficient 
    On the read disk, messages are split into their respective physical queues, presenting real partitions to consumers. This ensures that consumer read operations (e.g., page cache contention or slow consumer IOPS usage) only impact message consumption, not the write path.
 
 5. **Rust Implementation**:  
-   To address memory leaks and Java GC-related issues, the entire system is implemented in **Rust**. Rust provides memory safety, prevents common bugs like null pointer dereferences, and eliminates garbage collection overhead. This reduces the system’s memory footprint, freeing up more memory for use as read and write caches.  
-
----
+   To address memory leaks and Java GC-related issues, the entire system is implemented in **Rust**. Rust provides memory safety, prevents common bugs like null pointer dereferences, and eliminates garbage collection overhead. This reduces the system's memory footprint, freeing up more memory for use as read and write caches.  
 
 ### Why Rust?
 
@@ -241,7 +217,7 @@ Given the increasing adoption of Rust in modern infrastructure projects (e.g., A
 ## 1. Message Writing
 
 ### Multi-Machine Cluster
-
+![partition_repica](./partition_repica.jpg)
 The cluster consists of multiple machines, typically 5, 10, or more. **Zookeeper** is used for leader election, selecting the **controller** for the cluster and the **leader replicas** for partitions. Metadata is stored in a relational database or a key-value store (KV). Each machine in the cluster maintains the following components:
 
 1. **Two Physical Disks**: 
@@ -251,17 +227,13 @@ The cluster consists of multiple machines, typically 5, 10, or more. **Zookeeper
 2. **Limited Partitions per Machine**:  
    Each machine hosts 3-5 write partitions, which are replicated across the cluster to ensure fault tolerance.
 
----
-
 ### Design Principles
 
-- **Leverage Kafka’s Replication Protocol**:  
+- **Leverage Kafka's Replication Protocol**:  
   Kafka's replication protocol is simple, reliable, and elegantly designed. StoneMQ adopts a similar approach for write replication.
 
 - **Avoid Excessive Complexity**:  
   The underlying architecture of StoneMQ is designed to remain straightforward and maintainable.
-
----
 
 ### Core Concepts
 
@@ -289,9 +261,7 @@ The cluster consists of multiple machines, typically 5, 10, or more. **Zookeeper
 
 6. **Simplified Write Queue Design**:  
    - Write queues do not require **time index** 
-   - The splitting process from write queues to read queues is inspired by Pulsar’s **journal** and **entry log** concept.
-
----
+   - The splitting process from write queues to read queues is inspired by Pulsar's **journal** and **entry log** concept.
 
 ### Write and Split Process
 
@@ -308,9 +278,7 @@ The cluster consists of multiple machines, typically 5, 10, or more. **Zookeeper
 3. **Read Disk Operations**:  
    - The read disk serves as long-term storage and handles all consumer read requests.  
    - It restores the original partitioning structure of the topic, ensuring that consumers see the expected partition layout.  
-   - The read disk’s separation ensures that consumer activity does not interfere with write operations.
-
----
+   - The read disk's separation ensures that consumer activity does not interfere with write operations.
 
 ### Advantages of the Design
 
@@ -327,8 +295,6 @@ The cluster consists of multiple machines, typically 5, 10, or more. **Zookeeper
    - The system avoids replica proliferation by consolidating write partitions.  
    - Splitting data into read partitions ensures optimal long-term storage and read performance.
 
----
-
 ### Key Challenges and Solutions
 
 1. **Split Speed Discrepancies Between Primary and Replica Partitions**:  
@@ -343,9 +309,7 @@ The cluster consists of multiple machines, typically 5, 10, or more. **Zookeeper
    - While the system consolidates write partitions, it must still handle large numbers of topic partitions for reads.  
    - Solution: The read disk restores the original partition layout, ensuring that consumers see the expected structure without impacting write performance.
 
----
-
-This design combines the best aspects of Kafka’s replication protocol and Pulsar’s journal-entry log architecture to create a scalable, efficient, and fault-tolerant message queue system.
+This design combines the best aspects of Kafka's replication protocol and Pulsar's journal-entry log architecture to create a scalable, efficient, and fault-tolerant message queue system.
 
 ## 2. Crash Recovery Design
 
@@ -353,14 +317,10 @@ Crash recovery in StoneMQ is designed to ensure data consistency and minimize da
 
 ![](./checkpoints.png)
 
----
-
 ### 1. Leader Failure Recovery
 
 - When a **leader partition** crashes, one of its **follower replicas** is elected as the new leader using Zookeeper's election mechanism.
 - The new leader takes over write and replication responsibilities, ensuring minimal disruption to the system.
-
----
 
 ### 2. Machine Crash Recovery
 
@@ -395,8 +355,6 @@ When a machine crashes and restarts, the recovery process involves the following
   - Each log (journal and queue) maintains its own recovery point for independent restoration.  
   - This modular approach simplifies the recovery process and reduces interdependencies.  
 
----
-
 ### 3. Handling Single-Machine Mode
 
 In single-machine mode, the journal log is more vulnerable to data loss because there are no replicas. To mitigate this risk, the following temporary solution is implemented:
@@ -408,8 +366,6 @@ In single-machine mode, the journal log is more vulnerable to data loss because 
 2. **Performance Considerations**:  
    - This approach is only a temporary solution for single-machine mode. Once dual-machine replication is enabled, the journal log flush frequency returns to normal.  
    - In practice, the journal log is already flushed more frequently than the queue log, so the performance impact is minimal.  
-
----
 
 ### 4. Checkpoint Management
 
@@ -429,8 +385,6 @@ In single-machine mode, the journal log is more vulnerable to data loss because 
    - If a queue log does not roll for an extended period (e.g., no new messages are added), the **checkpoint monitoring thread** periodically forces a roll.  
    - This ensures that recovery points remain up-to-date and prevents the journal log from retaining unnecessary data.
 
----
-
 ### 5. Summary of Recovery Workflow
 
 1. **Crash Detection**:  
@@ -447,8 +401,6 @@ In single-machine mode, the journal log is more vulnerable to data loss because 
 4. **Checkpoint Synchronization**:  
    - Use checkpoints to align recovery progress between journal and queue logs.  
    - Periodically update and persist checkpoints during normal operation to simplify recovery.
-
----
 
 ### 6. Advantages of the Design
 
@@ -467,8 +419,6 @@ In single-machine mode, the journal log is more vulnerable to data loss because 
 4. **Scalability**:  
    - The recovery process scales well in multi-machine clusters due to the separation of journal and queue log recovery.  
    - Recovery is optimized for both single-machine and multi-machine deployments.
-
----
 
 ### 7. Open Questions and Future Enhancements
 
