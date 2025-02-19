@@ -1,0 +1,431 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta name="google-site-verification" content="IqPxX6jMzoqSIvuvpvuP9PCF7niBjR9EBY0UfP9MHEU"><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description" content="王军飞的博客"><title>Announcing Stonemq: A high-performance and efficient message queue developed in Rust | 王军飞的随笔</title><link rel="stylesheet" type="text/css" href="/css/style.css?v=1.0.0"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/normalize/latest/normalize.min.css"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/pure/latest/pure-min.min.css"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/pure/latest/grids-responsive-min.min.css"><link rel="stylesheet" href="//lib.baomitu.com/font-awesome/4.7.0/css/font-awesome.min.css"><script type="text/javascript" src="//lib.baomitu.com/jquery/latest/jquery.min.js"></script><link rel="icon" mask="" sizes="any" href="/favicon.ico"><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="apple-touch-icon-precomposed" href="/apple-touch-icon.png"><link rel="alternate" type="application/atom+xml" href="/atom.xml"><script type="text/javascript" src="//lib.baomitu.com/clipboard.js/latest/clipboard.min.js"></script><script type="text/javascript" src="//lib.baomitu.com/toastr.js/latest/toastr.min.js"></script><link rel="stylesheet" href="//lib.baomitu.com/toastr.js/latest/toastr.min.css"><meta name="generator" content="Hexo 7.3.0">
+<style>.github-emoji { position: relative; display: inline-block; width: 1.2em; min-height: 1.2em; overflow: hidden; vertical-align: top; color: transparent; }  .github-emoji > span { position: relative; z-index: 10; }  .github-emoji img, .github-emoji .fancybox { margin: 0 !important; padding: 0 !important; border: none !important; outline: none !important; text-decoration: none !important; user-select: none !important; cursor: auto !important; }  .github-emoji img { height: 1.2em !important; width: 1.2em !important; position: absolute !important; left: 50% !important; top: 50% !important; transform: translate(-50%, -50%) !important; user-select: none !important; cursor: auto !important; } .github-emoji-fallback { color: inherit; } .github-emoji-fallback img { opacity: 0 !important; }</style>
+</head><body><div class="body_container"><div id="header"><div class="site-name"><h1 class="hidden">Announcing Stonemq: A high-performance and efficient message queue developed in Rust</h1><a id="logo" href="/.">王军飞的随笔</a><p class="description">always be the best</p></div><div id="nav-menu"><a class="current" href="/."><i class="fa fa-home"> 首页</i></a><a href="/archives/"><i class="fa fa-archive"> 归档</i></a><a href="/about/"><i class="fa fa-user"> 关于</i></a><a href="/atom.xml"><i class="fa fa-rss"> 订阅</i></a></div></div><div class="pure-g" id="layout"><div class="pure-u-1 pure-u-md-3-4"><div class="content_container"><div class="post"><h1 class="post-title">Announcing Stonemq: A high-performance and efficient message queue developed in Rust</h1><div class="post-meta">2025-02-10<script src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async></script><span id="busuanzi_container_page_pv"> | <span id="busuanzi_value_page_pv"></span><span> 阅读</span></span><span class="post-time"><span class="post-meta-item-text"> | </span><span class="post-meta-item-icon"><i class="fa fa-keyboard-o"></i><span class="post-count"> 4.8k</span><span class="post-meta-item-text"> 字</span></span></span><span class="post-time"> | <span class="post-meta-item-icon"><i class="fa fa-clock-o"></i><span class="post-count"> 30</span><span class="post-meta-item-text"> 分钟</span></span></span></div><a class="disqus-comment-count" href="/2025/02/10/Announcing-Stonemq-A-high-performance-and-efficient-message-queue-developed-in-Rust/#vcomment"><span class="valine-comment-count" data-xid="/2025/02/10/Announcing-Stonemq-A-high-performance-and-efficient-message-queue-developed-in-Rust/"></span><span> 条评论</span></a><div class="post-content"><h2 id="TL-DR"><a href="#TL-DR" class="headerlink" title="TL;DR:"></a><strong>TL;DR:</strong></h2><p>1.<strong>Codebase</strong>: <a target="_blank" rel="noopener" href="https://github.com/jonefeewang/stonemq">https://github.com/jonefeewang/stonemq</a>  </p>
+<p>2.<strong>Current Features (v0.1.0)</strong>:  </p>
+<ul>
+<li>Supports single-node message sending and receiving.  </li>
+<li>Implements group consumption functionality.</li>
+</ul>
+<p>3.<strong>Goal</strong>:  </p>
+<ul>
+<li>Aims to replace Kafka’s server-side functionality in massive-scale queue cluster.  </li>
+<li>Focused on reducing operational costs while improving efficiency.  </li>
+<li>Fully compatible with Kafka’s client-server communication protocol, enabling seamless client-side migration without requiring modifications.</li>
+</ul>
+<p>4.<strong>Technology</strong>:  </p>
+<ul>
+<li>Entirely developed in <strong>Rust</strong>.  </li>
+<li>Utilizes <strong>Rust Async</strong> and <strong>Tokio</strong> to achieve high performance, concurrency, and scalability.</li>
+</ul>
+<p>5.<strong>Preliminary Performance Testing</strong>:  </p>
+<ul>
+<li><p><strong>Setup</strong>: The comparison between Kafka 2.6.0 and StoneMQ (v0.1.0) was conducted using Kafka 2.6.0’s built-in client producer benchmark tool. The tests were conducted on an Apple 2023 MacBook Pro (12 CPU cores, 18 GPU cores, 512GB SSD), with both systems operating in <strong>single-node, single-replica mode</strong>. You can reproduce these tests by building the project locally and modifying StoneMQ’s configuration file. For detailed instructions, refer to the project’s <strong>README</strong> file.</p>
+</li>
+<li><p><strong>Results</strong>:  </p>
+<ul>
+<li><p>Kafka’s performance exhibited noticeable fluctuations as the number of partitions increased, while StoneMQ maintained stable performance.  </p>
+</li>
+<li><p><strong>Memory Usage</strong>:  </p>
+<ul>
+<li>Kafka consumed over <strong>400 MB</strong> of memory with 1,000 partitions.  </li>
+<li>StoneMQ used only <strong>44 MB</strong> under the same conditions.</li>
+</ul>
+</li>
+<li><p><strong>Note</strong>: The comparison is not entirely fair, as the test machine lacked dual-disk support. Consequently, StoneMQ’s splitting tasks were not enabled during testing, and queue data was not written to disk.</p>
+<p><img src="/2025/02/10/Announcing-Stonemq-A-high-performance-and-efficient-message-queue-developed-in-Rust/2p.svg"><br><img src="/2025/02/10/Announcing-Stonemq-A-high-performance-and-efficient-message-queue-developed-in-Rust/10p.svg"><br><img src="/2025/02/10/Announcing-Stonemq-A-high-performance-and-efficient-message-queue-developed-in-Rust/100p.svg"><br><img src="/2025/02/10/Announcing-Stonemq-A-high-performance-and-efficient-message-queue-developed-in-Rust/1000p.svg"></p>
+</li>
+</ul>
+</li>
+</ul>
+<p>Stonemq aims to outperform Kafka in scenarios with massive-scale queue clusters, delivering enhanced performance and efficiency to achieve cost reduction and operational optimization.</p>
+<p>In use cases involving large clusters with countless queues—particularly in enterprise business services and public cloud services—there can be tens of thousands of partitions and partition leaders. Regardless of whether the queues contain messages, the volume of messages, or the flow rate, the presence or absence of active consumers in each partition poses a significant burden for cluster operators. Partition growth negatively impacts cluster throughput, while node failures or restarts often result in partition leader and controller switching, creating critical operational challenges. Stonemq addresses these inefficiencies.</p>
+<p>Cluster performance should remain consistent regardless of partition growth. Queues with varying traffic volumes need consolidation to enable more efficient message flow—akin to containerized shipping for multiple clients. This is precisely the vision of Stonemq. While solutions like Pulsar utilize journaling for centralized message handling, Stonemq seeks to retain Kafka’s replication , which simplifies and standardizes cluster operation and maintenance.We believe this protocol is both straightforward and highly efficient, forming the backbone of our solution.Additionally, by reusing Kafka’s client-server communication protocol, StoneMQ ensures seamless migration without requiring any changes to the user’s client applications. This approach significantly reduces adoption costs for users, enabling a smooth transition to StoneMQ while retaining the familiar and reliable interface they are accustomed to. </p>
+<h2 id="Why-Another-Message-Queue"><a href="#Why-Another-Message-Queue" class="headerlink" title="Why Another Message Queue?"></a>Why Another Message Queue?</h2><p>Why create a new “wheel”?  </p>
+<p>Apache Kafka and Apache Pulsar are both outstanding message queue solutions, widely adopted by major tech companies. Examples include Mafka (built on Kafka), DDMQ (built on Pulsar), and cloud service providers like Alibaba Cloud and Tencent Cloud (TDMQ), which have developed excellent products based on these technologies.  </p>
+<p>However, based on my years of experience in message queue development (having led the development of Mafka for over 4 years and DDMQ for more than 1 year), as well as my expertise in managing and operating large enterprise clusters (exceeding 4,000 virtual machines or containers) with 99.999% availability, I believe these products are not without significant flaws. It is entirely possible to create a better solution.  </p>
+<p>Kafka’s high throughput and low latency are exceptional. Its distributed design is highly reasonable, and its underlying principles are relatively simple, making it an excellent platform for enterprise-level secondary development. With the integration of auxiliary systems, it’s possible to build highly available enterprise-grade clusters. For a detailed analysis of Kafka’s strengths and weaknesses, you can refer to my earlier blog post on industry research into message queues. Here, I’ll briefly summarize some key points.  </p>
+<h3 id="Pros-of-Kafka"><a href="#Pros-of-Kafka" class="headerlink" title="Pros of Kafka:"></a>Pros of Kafka:</h3><ol>
+<li><p><strong>High Throughput and Low Latency</strong>:<br>Kafka excels in throughput and latency due to its use of sequential file I/O for reading and writing messages. This efficient approach achieves exceptional performance with high speeds and minimal delay.  </p>
+</li>
+<li><p><strong>High Availability and Reliability</strong>:<br>Kafka employs a distributed system with multiple replicas for each partition. In the event of a node failure, a new leader replica is quickly chosen using Zookeeper’s consistency mechanism, ensuring uninterrupted availability (up to n-1 nodes when replicas = n). With settings like ack=-1 and minInsyncIRS &gt;=2, a message is considered sent only when all replicas are updated, maintaining high reliability by ensuring sufficient synchronized replicas at all times.  </p>
+</li>
+<li><p><strong>Simple Scaling and Maintenance</strong>:<br>All machines within the cluster are treated equally, enabling straightforward scaling options. Adding or removing machines can be easily managed by triggering data rebalancing processes.  </p>
+</li>
+<li><p><strong>No Java GC-related Issues</strong>:<br>As Kafka writes message data directly to disk, without storing or caching it in memory, it minimizes Java memory usage. This avoids the common garbage collection (GC) problems encountered with Java-based systems.</p>
+</li>
+</ol>
+<h3 id="Cons-of-Kafka"><a href="#Cons-of-Kafka" class="headerlink" title="Cons of Kafka:"></a>Cons of Kafka:</h3><ol>
+<li><p><strong>System Complexity</strong>:<br>Kafka’s distributed multi-active mechanism introduces complexity, particularly around intra-cluster communication, leader election, partition leader management, topic lifecycle management, and message cleanup. These inter-node RPCs and consistency mechanisms across a complex distributed system create challenges in local data maintenance and pose significant bug risks.</p>
+</li>
+<li><p><strong>Tight Coupling Between Consumers and Partitions</strong>:<br>Kafka enforces a rigid one-to-one relationship between a single consumer and a partition. To increase consumption capacity, you must add more partitions, but this increases partition count, intensifying the cluster’s load and management complexity. This lack of flexibility constrains operational scalability.</p>
+</li>
+<li><p><strong>Dependence on Zookeeper, Increasing Maintenance Costs</strong>:<br>Kafka offloads cluster-wide leader election and consistency management to Zookeeper, necessitating its deployment alongside Kafka. This dependence on an additional component increases system complexity and incurs higher operational and maintenance costs.</p>
+</li>
+</ol>
+<p>In addition to the architectural analysis above, several issues become glaringly apparent when deploying large-scale clusters in real-world production environments:</p>
+<h3 id="Exponential-Growth-of-Partitions-and-Replicas"><a href="#Exponential-Growth-of-Partitions-and-Replicas" class="headerlink" title="Exponential Growth of Partitions and Replicas:"></a>Exponential Growth of Partitions and Replicas:</h3><ol>
+<li><p><strong>Traffic Isolation Leading to Rapid Growth</strong>:<br>To meet business demands, traffic isolation has become a standard requirement in the industry. This often includes isolating environments (e.g., prod, stage, release) or adopting regional/zone-based isolation (commonly termed “set-based” in many companies). A straightforward and efficient way to achieve this is by leveraging queues to simulate separation. However, in a unified company-wide cluster, this requirement is used by various departments, both large and small, leading to exponential proliferation of queues. This queue expansion results in a corresponding increase in partitions, which subsequently causes a multipliers-level surge in replica counts.</p>
+</li>
+<li><p><strong>Consumption Model Leading to Growth</strong>:<br>Kafka’s consumption model enforces that a queue’s partition can only be consumed by a single consumer. When users produce messages using hash keys or when the number of consumers increases, additional partitions must be created to accommodate new consumers. In such scenarios, partition resource consumption does not stem from increased traffic but simply from the growing number of consumers. This tight coupling between the number of consumers and partitions significantly drives up partition counts.</p>
+</li>
+</ol>
+<p>The exponential growth of partitions and replicas leads directly to an increase in the number of fragmented files being written, compounding performance issues. For instance, if a single machine hosts over 3,000 partitions, with three replicas managed, this often approaches 10,000 partitions. This has several critical repercussions:</p>
+<ol>
+<li><p><strong>Disk Random I/O caused by Fragmented Files</strong>:<br>Writing thousands of fragmented files concurrently poses significant challenges. Leader replicas directly influence client-side sending latency as they are written, while follower replica writes—especially with ack=-1 settings—also impact leader latencies. Even during client-side reads (limited to leader replicas), the increased partition count exacerbates random read problems. It’s important to note that even with SSDs, excessive random I/O severely reduces disk performance.  </p>
+</li>
+<li><p><strong>Page Cache Pollution</strong>:<br>This issue is inherent to Kafka and escalates sharply with the growth of replica counts on a single machine. Both reads and writes rely on the page cache, but since page cache size is limited, an increase in fragmented files results in heightened contention for cache resources, degrading performance.  </p>
+</li>
+<li><p><strong>Flush IOPS Costs During Log Segment Rolls</strong>:<br>Even though these fragmented files are not flushed during writes—relying on follower replicas for durability—Kafka performs a flush when log segments are rolled. This flush operation directly consumes IOPS.</p>
+</li>
+</ol>
+<h3 id="Interaction-Between-Large-and-Small-Queues"><a href="#Interaction-Between-Large-and-Small-Queues" class="headerlink" title="Interaction Between Large and Small Queues:"></a>Interaction Between Large and Small Queues:</h3><p>When two queues with dramatically different traffic patterns (e.g., one with 10x or more throughput than the other) coexist, this imbalance becomes problematic. Large queues require more consumers, which further increases the number of partitions and replicas, ultimately impacting the latency and performance of smaller queues.</p>
+<h3 id="Unexpected-Backlogs-and-Reprocessing"><a href="#Unexpected-Backlogs-and-Reprocessing" class="headerlink" title="Unexpected Backlogs and Reprocessing:"></a>Unexpected Backlogs and Reprocessing:</h3><p>This issue typically arises when slow-consuming queues suddenly resume consumption. If the necessary hot data is no longer in the page cache, data must be fetched from disk, consuming significant IOPS. This behavior disrupts the system’s performance and can lead to unexpected delays.</p>
+<h3 id="Poor-Controllability-of-Page-Cache"><a href="#Poor-Controllability-of-Page-Cache" class="headerlink" title="Poor Controllability of Page Cache:"></a>Poor Controllability of Page Cache:</h3><p>Since page cache is managed by the operating system, there is minimal control available to users. Configurations are typically limited to tuning parameters like dirty page ratios or flush intervals, without granular control. Users seeking control over caching must resort to application-side caching. However, Java-based languages (such as Java, Scala, or Groovy) often lack the efficiency of system programming languages like C, C++, or Rust when managing memory caches. This inefficiency can result in complications such as memory leaks or Out of Memory (OOM) errors, further deteriorating system reliability.</p>
+<p>Pulsar is another highly popular message queue product with a large and active community. The advantages and disadvantages of Pulsar’s architectural design have been discussed in detail in my previous blog, and a brief summary is provided below:</p>
+<h3 id="Pros-of-Pulsar"><a href="#Pros-of-Pulsar" class="headerlink" title="Pros of Pulsar:"></a>Pros of Pulsar:</h3><ol>
+<li><p><strong>Reduced Latency from Slow Nodes</strong>:<br>Pulsar allows messages to be stored on the fastest two nodes, avoiding the latency impact caused by slower nodes during writes.</p>
+</li>
+<li><p><strong>Efficient Cluster Scalability</strong>:<br>When new Bookie nodes are added, they can quickly become part of the Qw (quorum write) group to receive messages, enabling rapid cluster expansion.</p>
+</li>
+<li><p><strong>No Risk of Split-Brain</strong>:<br>Since Pulsar’s architecture lacks the concept of a leader, it avoids the risk of split-brain scenarios caused by network partitioning, which Kafka is susceptible to.</p>
+</li>
+</ol>
+<h3 id="Cons-of-Pulsar"><a href="#Cons-of-Pulsar" class="headerlink" title="Cons of Pulsar:"></a>Cons of Pulsar:</h3><ol>
+<li><p><strong>Complex Architecture</strong>:<br>Pulsar’s architecture consists of three components: Pulsar, BookKeeper, and RocksDB. Data is distributed across these components, increasing complexity.</p>
+</li>
+<li><p><strong>Complex Data Storage Model</strong>:<br>The smallest storage unit, a fragment, can have its Qa (quorum acknowledgement) spread across multiple Bookies. This results in a massive number of fragmented and scattered fragments throughout the cluster, making maintenance highly complex. Additionally, reading data requires hopping across multiple machines, leading to lower efficiency.</p>
+</li>
+<li><p><strong>Strong Dependency on Zookeeper</strong>:<br>Metadata such as the relationship between ledgers and fragments and their storage locations is stored in Zookeeper. If a Bookie cannot connect to Zookeeper, it stops accepting writes and restarts to maintain consistency. This means that if several nodes or all nodes lose connection to Zookeeper, or if Zookeeper itself fails, the entire cluster becomes non-operational.  </p>
+</li>
+<li><p><strong>Inefficient Disk Usage</strong>:<br>Unlike Kafka, BookKeeper does not rely on page cache for writes. Instead, it performs group commits with forced disk flushes. During reads, it relies on file indexing for random reads, which results in overall lower disk efficiency.</p>
+</li>
+<li><p><strong>Data Recovery After Node Failure</strong>:<br>When a Bookie node fails, a significant amount of data must still be moved to create new replicas for disaster recovery. While this is similar to Kafka, Pulsar performs better in that incremental data is not at risk. After a single-node failure, Pulsar can quickly form a new replica group, whereas Kafka must redistribute replicas, leaving both incremental and historical data with reduced redundancy until recovery is complete.</p>
+</li>
+</ol>
+<h3 id="Pulsar-Issues-in-Real-World-Production-Environments"><a href="#Pulsar-Issues-in-Real-World-Production-Environments" class="headerlink" title="Pulsar Issues in Real-World Production Environments:"></a>Pulsar Issues in Real-World Production Environments:</h3><ol>
+<li><p><strong>Strong Dependency on Zookeeper</strong>:<br>This has been extensively discussed in my previous blog, “Pulsar and the Problem of Removing Zookeeper”. Pulsar’s reliance on Zookeeper is deeply ingrained in its architecture. To ensure consistency, BookKeeper prevents two clients from writing to the same ledger simultaneously. This consistency is enforced by the client relying on Zookeeper’s global coordination capabilities. This dependency is far stronger than Kafka’s reliance on Zookeeper. In Kafka, consistency is managed by electing a single controller node during initialization, which oversees cluster-wide operations. As long as the controller remains operational, Kafka can temporarily function without Zookeeper (albeit with some minor limitations, such as delayed leaderAndIsr notifications and broker state updates). This makes Kafka’s dependency on Zookeeper much less critical in comparison.</p>
+</li>
+<li><p><strong>Memory Leaks and OOM Issues</strong>:<br>Both Pulsar brokers and BookKeeper heavily rely on in-memory caching to improve message read and write efficiency. Many of these caches use off-heap memory. During machine upgrades or maintenance, even small memory leaks can accumulate over time, causing off-heap memory usage to gradually rise and eventually lead to OOM errors. Identifying these memory leaks and performing upgrades and fixes requires significant effort.</p>
+</li>
+<li><p><strong>Loose Architecture with Multiple Components</strong>:<br>Compared to Kafka, Pulsar’s architecture is far more fragmented and challenging to maintain. Pulsar requires familiarity with multiple systems, including Pulsar Broker, BookKeeper, BookKeeper Client (a critical component), and RocksDB. This increases development costs significantly. Similarly, operational and maintenance costs are higher, as these systems require coordinated upgrades and maintenance. In contrast, Kafka’s single distributed system is far simpler. While Kafka’s distributed design is complex, it is well-structured and easier to follow, resulting in much lower maintenance overhead. By comparison, Kafka feels like a paradise in terms of simplicity and manageability.</p>
+</li>
+</ol>
+<p>So, after all this discussion, is there truly a perfect message queue system that can combine the advantages of these technologies while eliminating their disadvantages? Throughout my years of development and maintenance experience, I have constantly pondered this question: can we do better?  </p>
+<p>Kafka, after version 1.0, shifted its focus towards stream processing, tiered storage, and cloud-native capabilities, yet made very little substantial progress in its core architecture. Similarly, Pulsar has been chasing stream processing and cloud-native trends, while recent efforts have centered on removing its dependency on Zookeeper. These directions, however, are driven by market and capital pressures. But does this mean the architectural evolution of message queue systems has already reached its limit?  </p>
+<p>It was with this question in mind that the idea for <strong>StoneMQ</strong> was born.</p>
+<h2 id="Conceptual-Design"><a href="#Conceptual-Design" class="headerlink" title="Conceptual Design"></a>Conceptual Design</h2><p> The primary architecture is outlined in the diagram below:  </p>
+<p><img src="/2025/02/10/Announcing-Stonemq-A-high-performance-and-efficient-message-queue-developed-in-Rust/concept.jpg"></p>
+<p>The entire system is designed with a <strong>read-write separation</strong> architecture. As shown in the diagram, it is a distributed system consisting of multiple brokers (e.g., broker1, broker2, broker3). Each broker contains two disks: <code>/disk1</code> (write disk) and <code>/disk2</code> (read disk).  </p>
+<p>On the write disk (<code>/disk1</code>), partitions such as <code>wq1</code> (write queue 1), <code>wq2</code>, and <code>wq3</code> are hosted. For instance, <code>wq1_r1</code> is the replica of <code>wq1</code> on broker2, and <code>wq1_r2</code> is the replica on broker3. Similarly, <code>wq2</code> and <code>wq3</code> follow the same pattern. Primary partitions (leaders) are marked in green, while replicas (followers) are marked in white. Messages are written to the leader partition, and replication works similarly to Kafka, with leader and follower replicas synchronizing data.  </p>
+<p>However, the system limits the total number of partitions to a small, fixed number (e.g., 10 or 20). All queues write their messages into these limited partitions, distributing both write and read responsibilities across all brokers. Writes are concentrated on <code>/disk1</code>, while <code>/disk2</code> is reserved for reads. The write partitions are asynchronously split into physical queues for long-term storage by a background <strong>splitter</strong> process. Periodic checkpoints ensure that split messages are written into actual physical queue files on the read disk, which are rolled based on time or size.  </p>
+<p>The write disk serves as a <strong>short-term storage</strong> layer, facilitating efficient writes and replication between primary and replica partitions. Meanwhile, the read disk functions as the <strong>long-term storage</strong> layer, storing messages in their final physical queues. This separation ensures that writes and replications are optimized for throughput, while reads are handled independently.  </p>
+<h3 id="Key-Design-Inspirations-and-Benefits"><a href="#Key-Design-Inspirations-and-Benefits" class="headerlink" title="Key Design Inspirations and Benefits:"></a>Key Design Inspirations and Benefits:</h3><ol>
+<li><p><strong>Kafka-inspired Write and Replication Mechanism</strong>:<br>By adopting Kafka’s leader-follower replication model, the system ensures high availability and fault tolerance. However, to address Kafka’s scalability challenges caused by excessive partition growth, all queues are consolidated into a limited number of partitions. This reduces the overall partition count in the cluster, significantly improving write and replication throughput.</p>
+</li>
+<li><p><strong>Pulsar-inspired Read-Write Separation</strong>:<br>The system separates read and write operations across two disks. Write operations are concentrated on the write disk (<code>/disk1</code>), while read operations are handled by the read disk (<code>/disk2</code>). This separation eliminates the mutual interference between reads and writes, ensuring that write throughput is unaffected by read operations and vice versa.  </p>
+</li>
+<li><p><strong>Optimized Partition Management</strong>:<br>By consolidating all queues into a small number of partitions for writes, the system avoids the exponential growth of partitions and replicas caused by traffic isolation or consumption model requirements. This design prevents the cluster from being overwhelmed by excessive replica counts, fragmented files, and random I/O issues.</p>
+</li>
+<li><p><strong>Improved Consumer Experience</strong>:<br>On the read disk, messages are split into their respective physical queues, presenting real partitions to consumers. This ensures that consumer read operations (e.g., page cache contention or slow consumer IOPS usage) only impact message consumption, not the write path.</p>
+</li>
+<li><p><strong>Rust Implementation</strong>:<br>To address memory leaks and Java GC-related issues, the entire system is implemented in <strong>Rust</strong>. Rust provides memory safety, prevents common bugs like null pointer dereferences, and eliminates garbage collection overhead. This reduces the system’s memory footprint, freeing up more memory for use as read and write caches.</p>
+</li>
+</ol>
+<h3 id="Why-Rust"><a href="#Why-Rust" class="headerlink" title="Why Rust?"></a>Why Rust?</h3><p>Given the increasing adoption of Rust in modern infrastructure projects (e.g., AWS foundational systems, Google Android team, Microsoft investments, and its inclusion in the Linux kernel), it is clear that Rust is a wise choice for building high-performance, reliable systems. Unlike C/C++, Rust offers memory safety without compromising performance, making it an ideal language for this project. By leveraging Rust, the system minimizes memory-related issues and maximizes resource efficiency, ensuring a robust and scalable message queue system.</p>
+<h2 id="Detailed-Design"><a href="#Detailed-Design" class="headerlink" title="Detailed Design"></a>Detailed Design</h2><h2 id="1-Message-Writing"><a href="#1-Message-Writing" class="headerlink" title="1. Message Writing"></a>1. Message Writing</h2><h3 id="Multi-Machine-Cluster"><a href="#Multi-Machine-Cluster" class="headerlink" title="Multi-Machine Cluster"></a>Multi-Machine Cluster</h3><p><img src="/2025/02/10/Announcing-Stonemq-A-high-performance-and-efficient-message-queue-developed-in-Rust/partition_repica.jpg" alt="partition_repica"><br>The cluster consists of multiple machines, typically 5, 10, or more. <strong>Zookeeper</strong> is used for leader election, selecting the <strong>controller</strong> for the cluster and the <strong>leader replicas</strong> for partitions. Metadata is stored in a relational database or a key-value store (KV). Each machine in the cluster maintains the following components:</p>
+<ol>
+<li><p><strong>Two Physical Disks</strong>: </p>
+<ul>
+<li><strong>Write Disk</strong>: Handles all write operations and replication.</li>
+<li><strong>Read Disk</strong>: Stores long-term data and serves consumer read requests.</li>
+</ul>
+</li>
+<li><p><strong>Limited Partitions per Machine</strong>:<br>Each machine hosts 3-5 write partitions, which are replicated across the cluster to ensure fault tolerance.</p>
+</li>
+</ol>
+<h3 id="Design-Principles"><a href="#Design-Principles" class="headerlink" title="Design Principles"></a>Design Principles</h3><ul>
+<li><p><strong>Leverage Kafka’s Replication Protocol</strong>:<br>Kafka’s replication protocol is simple, reliable, and elegantly designed. StoneMQ adopts a similar approach for write replication.</p>
+</li>
+<li><p><strong>Avoid Excessive Complexity</strong>:<br>The underlying architecture of StoneMQ is designed to remain straightforward and maintainable.</p>
+</li>
+</ul>
+<h3 id="Core-Concepts"><a href="#Core-Concepts" class="headerlink" title="Core Concepts"></a>Core Concepts</h3><ol>
+<li><p><strong>Partition and Replica Management</strong>:  </p>
+<ul>
+<li>Each machine hosts <strong>leader partitions</strong> (e.g., <code>a1</code>, <code>a2</code>, <code>b1</code>, <code>b2</code>) and <strong>replica partitions</strong>.  </li>
+<li>Write partitions on the <strong>write disk</strong> replicate data using a protocol similar to Kafka.  </li>
+<li>Read partitions on the <strong>read disk</strong> are managed by a <strong>splitter thread</strong>, which splits write queues into physical queues and restores the original partition and replica structure.</li>
+</ul>
+</li>
+<li><p><strong>Replication and ISR</strong>:  </p>
+<ul>
+<li>The <strong>ISR (In-Sync Replica)</strong> concept is adopted from Kafka to ensure replication consistency.  </li>
+<li>Unlike Kafka, there is no <strong>HW (High Watermark)</strong> concept on the write disk, as it is not used for reads. The splitter process directly reads from the <strong>LEO (Log End Offset)</strong>.</li>
+</ul>
+</li>
+<li><p><strong>Read Disk Synchronization</strong>:  </p>
+<ul>
+<li>The splitter thread processes data at different speeds for primary and replica partitions.  </li>
+<li>During leader failover, if a replica partition has slower splitting speeds, it must ensure that it can still serve the required offsets.  </li>
+<li>When a replica fetches data, it can communicate its splitting progress to determine whether backpressure is needed.</li>
+</ul>
+</li>
+<li><p><strong>Crash Recovery</strong>:  </p>
+<ul>
+<li>After a machine restarts, the <strong>read replica</strong> must synchronize with the primary replica to recover any uncommitted partition files.</li>
+</ul>
+</li>
+<li><p><strong>Partition Distribution</strong>:  </p>
+<ul>
+<li>The number of partitions for a topic should be large enough to evenly distribute write traffic across all machines.  </li>
+<li>StoneMQ avoids the issue of replica explosion on write partitions by consolidating multiple partitions into a limited number of write queues.  </li>
+<li>Even with a high number of real topic partitions, the system efficiently manages replication without excessive overhead.</li>
+</ul>
+</li>
+<li><p><strong>Simplified Write Queue Design</strong>:  </p>
+<ul>
+<li>Write queues do not require <strong>time index</strong> </li>
+<li>The splitting process from write queues to read queues is inspired by Pulsar’s <strong>journal</strong> and <strong>entry log</strong> concept.</li>
+</ul>
+</li>
+</ol>
+<h3 id="Write-and-Split-Process"><a href="#Write-and-Split-Process" class="headerlink" title="Write and Split Process"></a>Write and Split Process</h3><ol>
+<li><p><strong>Write Disk Operations</strong>:  </p>
+<ul>
+<li>Producers send messages to the <strong>write partitions</strong> on the write disk.  </li>
+<li>Messages are replicated to follower replicas using a Kafka-like protocol.  </li>
+<li>The write disk only serves as short-term storage for incoming messages and replication.</li>
+</ul>
+</li>
+<li><p><strong>Splitter Thread</strong>:  </p>
+<ul>
+<li>The splitter thread periodically reads from the write queues on the write disk and splits data into <strong>read partitions</strong> on the read disk.  </li>
+<li>Splitting is asynchronous and checkpointed to ensure fault tolerance.  </li>
+<li>Data is written to physical queue files on the read disk, which are rolled based on time or size.</li>
+</ul>
+</li>
+<li><p><strong>Read Disk Operations</strong>:  </p>
+<ul>
+<li>The read disk serves as long-term storage and handles all consumer read requests.  </li>
+<li>It restores the original partitioning structure of the topic, ensuring that consumers see the expected partition layout.  </li>
+<li>The read disk’s separation ensures that consumer activity does not interfere with write operations.</li>
+</ul>
+</li>
+</ol>
+<h3 id="Advantages-of-the-Design"><a href="#Advantages-of-the-Design" class="headerlink" title="Advantages of the Design"></a>Advantages of the Design</h3><ol>
+<li><strong>Scalable Partition Management</strong>:  <ul>
+<li>By consolidating multiple topic partitions into a limited number of write partitions, the system avoids the performance degradation caused by excessive partition growth, a common issue in Kafka.  </li>
+<li>The actual number of topic partitions can be large without impacting write throughput or replica overhead.</li>
+</ul>
+</li>
+<li><strong>Read-Write Separation</strong>:  <ul>
+<li>Writes are isolated on the write disk, while reads are handled independently on the read disk.  </li>
+<li>This separation ensures that consumer activity (e.g., slow consumers, high IOPS usage) does not affect message ingestion or replication.</li>
+</ul>
+</li>
+<li><strong>Fault Tolerance</strong>:  <ul>
+<li>The ISR mechanism ensures data consistency during replication.  </li>
+<li>Crash recovery mechanisms allow replicas to synchronize and restore uncommitted data after machine restarts.</li>
+</ul>
+</li>
+<li><strong>Efficient Resource Utilization</strong>:  <ul>
+<li>The system avoids replica proliferation by consolidating write partitions.  </li>
+<li>Splitting data into read partitions ensures optimal long-term storage and read performance.</li>
+</ul>
+</li>
+</ol>
+<h3 id="Key-Challenges-and-Solutions"><a href="#Key-Challenges-and-Solutions" class="headerlink" title="Key Challenges and Solutions"></a>Key Challenges and Solutions</h3><ol>
+<li><p><strong>Split Speed Discrepancies Between Primary and Replica Partitions</strong>:  </p>
+<ul>
+<li>During leader failover, slower replica splitting speeds may cause data availability issues.  </li>
+<li>Solution: Replicas communicate their splitting progress, and backpressure mechanisms ensure that consumers do not request unavailable offsets.</li>
+</ul>
+</li>
+<li><p><strong>Crash Recovery for Read Partitions</strong>:  </p>
+<ul>
+<li>Read replicas must recover uncommitted partition files from the primary replica.  </li>
+<li>Solution: Implement efficient synchronization protocols for restoring missing data.</li>
+</ul>
+</li>
+<li><p><strong>Scalability with Large Topic Partition Counts</strong>:  </p>
+<ul>
+<li>While the system consolidates write partitions, it must still handle large numbers of topic partitions for reads.  </li>
+<li>Solution: The read disk restores the original partition layout, ensuring that consumers see the expected structure without impacting write performance.</li>
+</ul>
+</li>
+</ol>
+<p>This design combines the best aspects of Kafka’s replication protocol and Pulsar’s journal-entry log architecture to create a scalable, efficient, and fault-tolerant message queue system.</p>
+<h2 id="2-Crash-Recovery-Design"><a href="#2-Crash-Recovery-Design" class="headerlink" title="2. Crash Recovery Design"></a>2. Crash Recovery Design</h2><p>Crash recovery in StoneMQ is designed to ensure data consistency and minimize data loss while maintaining high performance. The recovery process involves both <strong>journal log</strong> and <strong>queue log</strong> restoration, with mechanisms in place to handle various failure scenarios. Below is the detailed recovery strategy:</p>
+<p><img src="/2025/02/10/Announcing-Stonemq-A-high-performance-and-efficient-message-queue-developed-in-Rust/checkpoints.png"></p>
+<h3 id="1-Leader-Failure-Recovery"><a href="#1-Leader-Failure-Recovery" class="headerlink" title="1. Leader Failure Recovery"></a>1. Leader Failure Recovery</h3><ul>
+<li>When a <strong>leader partition</strong> crashes, one of its <strong>follower replicas</strong> is elected as the new leader using Zookeeper’s election mechanism.</li>
+<li>The new leader takes over write and replication responsibilities, ensuring minimal disruption to the system.</li>
+</ul>
+<h3 id="2-Machine-Crash-Recovery"><a href="#2-Machine-Crash-Recovery" class="headerlink" title="2. Machine Crash Recovery"></a>2. Machine Crash Recovery</h3><p>When a machine crashes and restarts, the recovery process involves the following steps:</p>
+<h4 id="Step-1-Restore-Journal-Log"><a href="#Step-1-Restore-Journal-Log" class="headerlink" title="Step 1: Restore Journal Log"></a>Step 1: Restore Journal Log</h4><ol>
+<li><p><strong>Journal Log Characteristics</strong>:  </p>
+<ul>
+<li>The journal log is a short-term, write-ahead log that uses Kafka’s replication protocol.  </li>
+<li>Due to the dual-write mechanism (at least two replicas), the journal log is highly reliable and unlikely to lose data.</li>
+</ul>
+</li>
+<li><p><strong>Recovery Process</strong>:  </p>
+<ul>
+<li>The journal log recovery point is independent of the queue log and is maintained separately.  </li>
+<li>The system uses the <strong>recovery point</strong> to determine where to resume fetching data from the primary replica.  </li>
+<li>Once the journal log is fully restored, the system proceeds to queue log recovery.</li>
+</ul>
+</li>
+</ol>
+<h4 id="Step-2-Restore-Queue-Log"><a href="#Step-2-Restore-Queue-Log" class="headerlink" title="Step 2: Restore Queue Log"></a>Step 2: Restore Queue Log</h4><ol>
+<li><p><strong>Queue Log Characteristics</strong>:  </p>
+<ul>
+<li>The queue log represents the long-term storage on the read disk.  </li>
+<li>During normal operation, the queue log periodically flushes its data and records the <strong>physical position</strong> in the journal log.</li>
+</ul>
+</li>
+<li><p><strong>Recovery Process</strong>:  </p>
+<ul>
+<li>The recovery point for the queue log is the last recorded physical position in the journal log.  </li>
+<li>The system begins restoring the queue log from this position, ensuring that all data is consistent with the journal log.</li>
+</ul>
+</li>
+</ol>
+<h4 id="Key-Features"><a href="#Key-Features" class="headerlink" title="Key Features:"></a><strong>Key Features</strong>:</h4><ul>
+<li><strong>Dual-Writing Guarantees</strong>:<br>The dual-write mechanism ensures that the journal log is always available for recovery, even if the queue log is partially lost.  </li>
+<li><strong>Separation of Recovery Points</strong>:  <ul>
+<li>Each log (journal and queue) maintains its own recovery point for independent restoration.  </li>
+<li>This modular approach simplifies the recovery process and reduces interdependencies.</li>
+</ul>
+</li>
+</ul>
+<h3 id="3-Handling-Single-Machine-Mode"><a href="#3-Handling-Single-Machine-Mode" class="headerlink" title="3. Handling Single-Machine Mode"></a>3. Handling Single-Machine Mode</h3><p>In single-machine mode, the journal log is more vulnerable to data loss because there are no replicas. To mitigate this risk, the following temporary solution is implemented:</p>
+<ol>
+<li><p><strong>Synchronized Flushing</strong>:  </p>
+<ul>
+<li>Whenever the queue log flushes its data, the journal log is flushed as well.  </li>
+<li>This ensures that the journal log is always consistent with the queue log.</li>
+</ul>
+</li>
+<li><p><strong>Performance Considerations</strong>:  </p>
+<ul>
+<li>This approach is only a temporary solution for single-machine mode. Once dual-machine replication is enabled, the journal log flush frequency returns to normal.  </li>
+<li>In practice, the journal log is already flushed more frequently than the queue log, so the performance impact is minimal.</li>
+</ul>
+</li>
+</ol>
+<h3 id="4-Checkpoint-Management"><a href="#4-Checkpoint-Management" class="headerlink" title="4. Checkpoint Management"></a>4. Checkpoint Management</h3><ol>
+<li><p><strong>Checkpoint Definition</strong>:  </p>
+<ul>
+<li>A <strong>checkpoint</strong> is a record stored at the end of each journal log segment. It maps the physical positions of all corresponding queue logs.  </li>
+<li>Checkpoints are used to synchronize journal and queue log recovery.</li>
+</ul>
+</li>
+<li><p><strong>Queue Log Checkpoints</strong>:  </p>
+<ul>
+<li>Each time the queue log rolls to a new segment, it flushes its data and updates the recovery point.  </li>
+<li>The system periodically persists these recovery points to ensure they are available during crash recovery.</li>
+</ul>
+</li>
+<li><p><strong>Journal Log Checkpoints</strong>:  </p>
+<ul>
+<li>The journal log periodically deletes expired segments based on the <strong>minimum recovery checkpoint</strong> across all queue logs.  </li>
+<li>This ensures that the journal log does not grow indefinitely and only retains relevant data for recovery.</li>
+</ul>
+</li>
+<li><p><strong>Handling Long-Idle Queue Logs</strong>:  </p>
+<ul>
+<li>If a queue log does not roll for an extended period (e.g., no new messages are added), the <strong>checkpoint monitoring thread</strong> periodically forces a roll.  </li>
+<li>This ensures that recovery points remain up-to-date and prevents the journal log from retaining unnecessary data.</li>
+</ul>
+</li>
+</ol>
+<h3 id="5-Summary-of-Recovery-Workflow"><a href="#5-Summary-of-Recovery-Workflow" class="headerlink" title="5. Summary of Recovery Workflow"></a>5. Summary of Recovery Workflow</h3><ol>
+<li><p><strong>Crash Detection</strong>:  </p>
+<ul>
+<li>Upon detecting a machine crash, the system identifies the affected partitions and begins the recovery process.</li>
+</ul>
+</li>
+<li><p><strong>Journal Log Recovery</strong>:  </p>
+<ul>
+<li>Restore the journal log using the replication protocol.  </li>
+<li>Use the journal log recovery point to fetch missing data from the leader replica.</li>
+</ul>
+</li>
+<li><p><strong>Queue Log Recovery</strong>:  </p>
+<ul>
+<li>Restore the queue log by reading from the journal log starting at the last recorded physical position.  </li>
+<li>Synchronize the queue log with the journal log to ensure consistency.</li>
+</ul>
+</li>
+<li><p><strong>Checkpoint Synchronization</strong>:  </p>
+<ul>
+<li>Use checkpoints to align recovery progress between journal and queue logs.  </li>
+<li>Periodically update and persist checkpoints during normal operation to simplify recovery.</li>
+</ul>
+</li>
+</ol>
+<h3 id="6-Advantages-of-the-Design"><a href="#6-Advantages-of-the-Design" class="headerlink" title="6. Advantages of the Design"></a>6. Advantages of the Design</h3><ol>
+<li><p><strong>Fault Tolerance</strong>:  </p>
+<ul>
+<li>The dual-write mechanism ensures that the journal log is always available, even during partial failures.  </li>
+<li>Independent recovery points for journal and queue logs provide modularity and robustness.</li>
+</ul>
+</li>
+<li><p><strong>Minimal Data Loss</strong>:  </p>
+<ul>
+<li>By flushing the queue log and journal log together in single-machine mode, the risk of data loss is minimized.  </li>
+<li>Checkpoints ensure that recovery always starts from a consistent state.</li>
+</ul>
+</li>
+<li><p><strong>Efficient Log Management</strong>:  </p>
+<ul>
+<li>The journal log automatically deletes expired segments based on the minimum recovery checkpoint, preventing unnecessary growth.  </li>
+<li>Idle queue logs are periodically rolled to keep checkpoints up-to-date.</li>
+</ul>
+</li>
+<li><p><strong>Scalability</strong>:  </p>
+<ul>
+<li>The recovery process scales well in multi-machine clusters due to the separation of journal and queue log recovery.  </li>
+<li>Recovery is optimized for both single-machine and multi-machine deployments.</li>
+</ul>
+</li>
+</ol>
+<h3 id="7-Open-Questions-and-Future-Enhancements"><a href="#7-Open-Questions-and-Future-Enhancements" class="headerlink" title="7. Open Questions and Future Enhancements"></a>7. Open Questions and Future Enhancements</h3><ol>
+<li><p><strong>Optimizing Single-Machine Mode</strong>:  </p>
+<ul>
+<li>Explore more efficient ways to handle journal log durability without frequent flushes in single-machine mode.</li>
+</ul>
+</li>
+<li><p><strong>Dynamic Checkpoint Management</strong>:  </p>
+<ul>
+<li>Investigate adaptive checkpointing strategies to balance recovery speed and runtime performance.</li>
+</ul>
+</li>
+<li><p><strong>Enhanced Monitoring</strong>:  </p>
+<ul>
+<li>Implement detailed monitoring and alerting for checkpoint progress, journal log growth, and recovery performance.</li>
+</ul>
+</li>
+</ol>
+<p>This crash recovery design ensures data durability, fault tolerance, and efficient log management, making StoneMQ highly resilient to failures.</p>
+</div><div class="post-copyright"><script type="text/javascript" src="/js/copyright.js?v=1.0.0" successtext="复制成功！"></script><link rel="stylesheet" type="text/css" href="/css/copyright.css?v=1.0.0"><p><span>本文标题：</span>Announcing Stonemq: A high-performance and efficient message queue developed in Rust</p><p><span>文章作者：</span>王军飞 jonefeewang@gmail.com</p><p><span>发布时间：</span>2025-02-10</p><p><span>最后更新：</span>2025-02-19</p><p><span>原始链接：</span><a href="/2025/02/10/Announcing-Stonemq-A-high-performance-and-efficient-message-queue-developed-in-Rust/">https://wangjunfei.com/2025/02/10/Announcing-Stonemq-A-high-performance-and-efficient-message-queue-developed-in-Rust/</a><span class="copy-path"><i class="fa fa-clipboard" data-clipboard-text="https://wangjunfei.com/2025/02/10/Announcing-Stonemq-A-high-performance-and-efficient-message-queue-developed-in-Rust/"></i></span></p><p><span>版权声明：</span>原创文章转载请注明出处</p></div><br><script type="text/javascript" src="/js/share.js?v=1.0.0" async></script><a class="article-share-link" data-url="https://wangjunfei.com/2025/02/10/Announcing-Stonemq-A-high-performance-and-efficient-message-queue-developed-in-Rust/" data-id="cm7b7f8sz00022f827r7v4xuy" data-qrcode="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQ4AAAEOCAAAAABd2qZ5AAAD8ElEQVR42u3dS24bQQwFQN//0s42QSzpPZIytCitDHnU3VNjgOInyNdX/Pr+69Ve8/309f+V7Y6Prn/+2dULBw4cOHDEt/rouM/f36yT3Ea++3Oa5JHgwIEDB44rjiSMPV86D7fJOklw3QddHDhw4MDxORy3SVS+ZhKAn6+JAwcOHDg+kyM5aH59klLuQy8OHDhw4PhNjn3Brk3t2oLjBvEttVIcOHDgwJGuXKdYn//zW+Y7cODAgQNHORXWpmpJQM3HFJKC4GZE74fdceDAgQPHmiMPSPukaPYtYEM5uy8cOHDgwLHhyIuASfPmKkgnfMkueaHzK5/IwIEDBw4cAUdyuCT4tcTtiFt+Y8P3ceDAgQPHKUey5WaoLh87uGp91SfEgQMHDhw3Jxz+I5znm+WhtB3Fu2plvZgcxIEDBw4cI47ZGHT+qdl4QdtAylPKF6EdBw4cOHCsOdpQuj90ezNt2bEN/y92x4EDBw4cI456THmUtiWfbW+yBY3WxIEDBw4ca45246vQm4fVdq88xOLAgQMHjluONnFqR+s2fPvGVf0+Dhw4cOA44pjdWJ5u5e2oWYEyLzi+oMGBAwcOHGuOWcNpVkxMcPOUMi8v5l8mcODAgQPHnmNYNYzD3m1xcN/ueoGLAwcOHDiOOGYHmo1Z56Dt2dr167kGHDhw4MARc+TDcG1LKS/J5QNw+/UfPlocOHDgwLHmSNo/SZK2H79uk728fTUc2sOBAwcOHOucZd8ESpK9WblwP+JQdN5w4MCBA8d2zdVRZodrR+jaBLL9LQ4cOHDgeAfHPkDmh86Z8t/uG1Q4cODAgeOK42rMOrmyLerd0kePGQcOHDhwHHHkjf+caXb9rOm1GWL4IdDiwIEDB441R/vhdnAhSQXboJ6fsM5lceDAgQPHiKOtILZHvE2x8uJgHvj/2QUHDhw4cLyNoy0L5kdpm0xtIK+/ZcwUceDAgQPHaNJ4lobtD902sTYPrP6rwYEDBw4cR32WWRFwhjhDz4uDxXwHDhw4cOAoOWbjBW0hL4fOQ2lOlg9G4MCBAweOK47ZeEFbkstvZjYwcdDowoEDBw4cNzMDw/82LA9gedkuD9jJ2MQwAOPAgQMHjgXHd/nKk6K2gNg2pdoVorEJHDhw4MCx5phNiyVLz1KsNlXbtMRydBw4cODA0Z4tD65X4W0WsGeUdaDFgQMHDhxHHLNAlYwmzAbm2od0loXhwIEDB44P4Ngne+3wxKa4+eIucODAgQPHr3O0YSwfQUhaXLMRhyQpxYEDBw4ctxz5EEO+WVsinBUHZw/moO2EAwcOHDjWAw37FG4zYNe2uDbFTRw4cODAMeL4A7OvNDbUvK0YAAAAAElFTkSuQmCC">分享</a><div class="tags"><ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Kafka/" rel="tag">Kafka</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Message-Queue/" rel="tag">Message Queue</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Pulsar/" rel="tag">Pulsar</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Rust/" rel="tag">Rust</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/StoneMQ/" rel="tag">StoneMQ</a></li></ul></div><div class="post-nav"><a class="next" href="/2023/12/25/Apache-Pulsar%E7%9A%84%E5%AD%98%E5%82%A8%E6%A8%A1%E5%9E%8B/">Apache Pulsar的存储模型</a></div><div class="nofancybox" id="vcomment"></div><script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script><script src="//unpkg.com/valine@latest/dist/Valine.min.js"></script><script>var notify = 'false' == 'true' ? true : false;
+var verify = 'true' == 'true' ? true : false;
+var GUEST_INFO = ['nick','mail','link'];
+var guest_info = 'nick,mail,link'.split(',').filter(function(item){
+  return GUEST_INFO.indexOf(item) > -1
+});
+guest_info = guest_info.length == 0 ? GUEST_INFO :guest_info;
+window.valine = new Valine({
+  el:'#vcomment',
+  notify:notify,
+  verify:verify,
+  appId:'FNjCNRwQqC3sTPP04DfRFIk9-gzGzoHsz',
+  appKey:'LzCq5t6a6RTkwXQVr8xLk0yj',
+  serverURLs:'',
+  placeholder:'请理性评论',
+  avatar:'monsterid',
+  guest_info:guest_info,
+  pageSize:'10'
+})
+</script></div></div></div><div class="pure-u-1 pure-u-md-1-4"><div id="sidebar"><div class="widget"><form class="search-form" action="//www.baidu.com/baidu" method="get" accept-charset="utf-8" target="_blank"><input type="search" name="word" maxlength="20" placeholder="Search"/><input type="hidden" name="si" value="https://wangjunfei.com"/><input name="tn" type="hidden" value="bds"/><input name="cl" type="hidden" value="3"/><input name="ct" type="hidden" value="2097152"/><input name="s" type="hidden" value="on"/></form></div><div class="widget"><div class="author-info"><a class="info-avatar" href="/about/" title="关于"><img class="nofancybox" src="/img/avatar.png"/></a><p>Always be the best</p><a class="info-icon" href="mailto:jonefeewang@outlook.com" title="Email" target="_blank" style="margin-inline:5px"> <i class="fa fa-envelope-square" style="margin-inline:5px"></i></a><a class="info-icon" href="https://github.com/jonefeewang" title="Github" target="_blank" style="margin-inline:5px"> <i class="fa fa-github-square" style="margin-inline:5px"></i></a><a class="info-icon" href="/atom.xml" title="RSS" target="_blank" style="margin-inline:5px"> <i class="fa fa-rss-square" style="margin-inline:5px"></i></a></div></div><div class="widget"><div class="widget-title"><i class="fa fa-folder-o"> 分类</i></div><ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%88%86%E5%B8%83%E5%BC%8F%E6%8A%80%E6%9C%AF/">分布式技术</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%8A%A1%E8%99%9A-%E4%BA%A4%E6%B5%81%E6%B2%9F%E9%80%9A/">务虚-交流沟通</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%8A%A1%E8%99%9A-%E7%AE%A1%E7%90%86%E6%96%B9%E6%B3%95%E8%AE%BA/">务虚-管理方法论</a><span class="category-list-count">8</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97/">消息队列</a><span class="category-list-count">9</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E7%A3%81%E7%9B%98%E8%AF%BB%E5%86%99%E4%BC%98%E5%8C%96/">磁盘读写优化</a><span class="category-list-count">1</span></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-star-o"> 标签</i></div><div class="tagcloud"><a href="/tags/Message-Queue/" style="font-size: 15px;">Message Queue</a> <a href="/tags/Rust/" style="font-size: 15px;">Rust</a> <a href="/tags/Kafka/" style="font-size: 15px;">Kafka</a> <a href="/tags/Pulsar/" style="font-size: 15px;">Pulsar</a> <a href="/tags/StoneMQ/" style="font-size: 15px;">StoneMQ</a> <a href="/tags/Apache-Pulsar/" style="font-size: 15px;">Apache Pulsar</a> <a href="/tags/Apache-Bookkeeper/" style="font-size: 15px;">Apache Bookkeeper</a> <a href="/tags/Apache-Kafka/" style="font-size: 15px;">Apache Kafka</a> <a href="/tags/Apache-pulsar-%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97-kafka-RocketMQ/" style="font-size: 15px;">Apache pulsar 消息队列 kafka RocketMQ</a> <a href="/tags/kafka-raft-kraft-zookeeper/" style="font-size: 15px;">kafka raft kraft zookeeper</a> <a href="/tags/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97/" style="font-size: 15px;">消息队列</a> <a href="/tags/rocketmq/" style="font-size: 15px;">rocketmq</a> <a href="/tags/kafka/" style="font-size: 15px;">kafka</a> <a href="/tags/pulsar/" style="font-size: 15px;">pulsar</a> <a href="/tags/%E5%8A%A1%E8%99%9A-%E7%AE%A1%E7%90%86%E6%96%B9%E6%B3%95%E8%AE%BA/" style="font-size: 15px;">务虚-管理方法论</a> <a href="/tags/%E5%8D%8E%E4%B8%BA/" style="font-size: 15px;">华为</a> <a href="/tags/%E7%AE%A1%E7%90%86%E6%96%B9%E6%B3%95%E8%AE%BA/" style="font-size: 15px;">管理方法论</a> <a href="/tags/%E7%AE%A1%E7%90%86/" style="font-size: 15px;">管理</a> <a href="/tags/%E5%8A%A1%E8%99%9A-%E9%A2%86%E5%AF%BC%E6%A2%AF%E9%98%9F/" style="font-size: 15px;">务虚-领导梯队</a> <a href="/tags/%E5%8A%A1%E8%99%9A/" style="font-size: 15px;">务虚</a> <a href="/tags/%E5%8D%8F%E4%BD%9C/" style="font-size: 15px;">协作</a> <a href="/tags/%E8%BD%AF%E7%B4%A0%E8%B4%A8/" style="font-size: 15px;">软素质</a> <a href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F%E6%8A%80%E6%9C%AF/" style="font-size: 15px;">分布式技术</a> <a href="/tags/zookeeper/" style="font-size: 15px;">zookeeper</a> <a href="/tags/consensus-algorithm/" style="font-size: 15px;">consensus algorithm</a> <a href="/tags/zab/" style="font-size: 15px;">zab</a> <a href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F%E5%8D%8F%E8%AE%AE/" style="font-size: 15px;">分布式协议</a> <a href="/tags/%E4%B8%80%E8%87%B4%E6%80%A7%E7%AE%97%E6%B3%95/" style="font-size: 15px;">一致性算法</a> <a href="/tags/%E6%96%B9%E6%B3%95%E8%AE%BA-%E8%BD%AF%E7%B4%A0%E8%B4%A8%E6%8F%90%E5%8D%87/" style="font-size: 15px;">方法论 软素质提升</a> <a href="/tags/kafka-netty-%E6%97%B6%E9%97%B4%E8%BD%AE/" style="font-size: 15px;">kafka netty 时间轮</a> <a href="/tags/%E4%BA%91%E5%8E%9F%E7%94%9F/" style="font-size: 15px;">云原生</a> <a href="/tags/%E6%B5%81%E5%BC%8F%E8%AE%A1%E7%AE%97/" style="font-size: 15px;">流式计算</a> <a href="/tags/%E7%A3%81%E7%9B%98%E8%AF%BB%E5%86%99%E4%BC%98%E5%8C%96/" style="font-size: 15px;">磁盘读写优化</a> <a href="/tags/mysql/" style="font-size: 15px;">mysql</a></div></div><div class="widget"><div class="widget-title"><i class="fa fa-file-o"> 最近文章</i></div><ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2025/02/10/Announcing-Stonemq-A-high-performance-and-efficient-message-queue-developed-in-Rust/">Announcing Stonemq: A high-performance and efficient message queue developed in Rust</a></li><li class="post-list-item"><a class="post-list-link" href="/2023/12/25/Apache-Pulsar%E7%9A%84%E5%AD%98%E5%82%A8%E6%A8%A1%E5%9E%8B/">Apache Pulsar的存储模型</a></li><li class="post-list-item"><a class="post-list-link" href="/2023/09/15/Apache-pulsar%E5%AF%B9zookeeper%E7%9A%84%E4%BE%9D%E8%B5%96%E5%92%8C%E5%8E%BB%E9%99%A4%E5%88%86%E6%9E%90-%E4%BA%8C/">Apache pulsar对zookeeper的依赖和去除分析(二)</a></li><li class="post-list-item"><a class="post-list-link" href="/2023/06/15/Apache-pulsar%E5%AF%B9zookeeper%E7%9A%84%E4%BE%9D%E8%B5%96%E5%92%8C%E5%8E%BB%E9%99%A4%E5%88%86%E6%9E%90-%E4%B8%80/">Apache pulsar对zookeeper的依赖和去除分析(一)</a></li><li class="post-list-item"><a class="post-list-link" href="/2023/04/10/%E6%97%B6%E9%97%B4%E8%BD%AE%E7%AE%97%E6%B3%95%E5%88%86%E6%9E%90%E5%92%8C%E5%BA%94%E7%94%A8/">时间轮算法分析和应用</a></li><li class="post-list-item"><a class="post-list-link" href="/2021/12/01/Kafka%E5%8E%BBZookeeper%E6%8F%AD%E7%A7%98/">Kafka去Zookeeper揭秘</a></li><li class="post-list-item"><a class="post-list-link" href="/2021/09/15/PRFAQ%E7%BC%96%E5%86%99%E8%A7%84%E8%8C%83/">「转」PRFAQ编写规范</a></li><li class="post-list-item"><a class="post-list-link" href="/2021/09/13/%E5%87%A0%E7%A7%8D%E5%B8%B8%E8%A7%81%E7%9A%84%E5%B7%A5%E4%BD%9C%E6%96%B9%E6%B3%95%E8%AE%BA%E6%B1%87%E9%9B%86/">「转」几种常见的工作方法论汇集</a></li><li class="post-list-item"><a class="post-list-link" href="/2021/08/14/%E8%BD%AF%E7%B4%A0%E8%B4%A8%E8%9E%BA%E6%97%8B%E4%B8%8A%E5%8D%87/">软素质螺旋上升</a></li><li class="post-list-item"><a class="post-list-link" href="/2021/07/22/Mafka%E5%85%A8%E9%93%BE%E8%B7%AF%E5%BC%B9%E6%80%A7%E4%BC%B8%E7%BC%A9%E6%BC%94%E8%BF%9B%E7%AD%96%E7%95%A5/">Mafka全链路弹性伸缩演进策略</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-external-link"> 友情链接</i></div><ul></ul><a href="http://www.example1.com/" title="site-name1" target="_blank">site-name1</a></div></div></div><div class="pure-u-1 pure-u-md-3-4"><div id="footer">Copyright © 2025 <a href="/." rel="nofollow">王军飞的随笔.</a> Powered by<a rel="nofollow" target="_blank" href="https://hexo.io"> Hexo.</a><a rel="nofollow" target="_blank" href="https://github.com/tufu9441/maupassant-hexo"> Theme</a> by<a rel="nofollow" target="_blank" href="https://github.com/pagecho"> Cho.</a></div></div></div><a class="show" id="rocket" href="#top"></a><script type="text/javascript" src="/js/totop.js?v=1.0.0" async></script><script type="text/javascript" src="//lib.baomitu.com/fancybox/latest/jquery.fancybox.min.js"></script><script type="text/javascript" src="/js/fancybox.js?v=1.0.0"></script><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/fancybox/latest/jquery.fancybox.min.css"><script type="text/javascript" src="/js/copycode.js?v=1.0.0" successtext="复制成功！"></script><link rel="stylesheet" type="text/css" href="/css/copycode.css?v=1.0.0"><script type="text/javascript" src="/js/codeblock-resizer.js?v=1.0.0"></script><script type="text/javascript" src="/js/smartresize.js?v=1.0.0"></script></div></body></html>
