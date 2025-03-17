@@ -13,11 +13,11 @@ tags:
   - Kafka
   - Pulsar
   - StoneMQ
-toc: true
+# toc: true
 ---
 
 ## **TL;DR:**
-1.**Codebase**: [GitHub Repository](https://github.com/jonefeewang/stonemq)  
+1.**Codebase**: [https://github.com/jonefeewang/stonemq](https://github.com/jonefeewang/stonemq)  
 
 2.**Current Features (v0.1.0)**:  
    - Supports single-node message sending and receiving.  
@@ -34,7 +34,7 @@ toc: true
 
 5.**Preliminary Performance Testing**:  
 
-   - **Setup**: The comparison between Kafka 2.6.0 and StoneMQ (v0.1.0) was conducted using Kafka 2.6.0's built-in producer benchmark tool. The tests were performed on an Apple 2023 MacBook Pro (12 CPU cores, 18 GPU cores, 512GB SSD).
+   - **Setup**: The comparison between Kafka 2.6.0 and StoneMQ (v0.1.0) was conducted using Kafka 2.6.0's built-in client producer benchmark tool. The tests were conducted on an Apple 2023 MacBook Pro (12 CPU cores, 18 GPU cores, 512GB SSD), with both systems operating in **single-node, single-replica mode**. You can reproduce these tests by building the project locally and modifying StoneMQ's configuration file. For detailed instructions, refer to the project's **README** file.
 
    - **Results**:  
 
@@ -72,7 +72,7 @@ However, based on my years of experience in message queue development (having le
 
 Kafka's high throughput and low latency are exceptional. Its distributed design is highly reasonable, and its underlying principles are relatively simple, making it an excellent platform for enterprise-level secondary development. With the integration of auxiliary systems, it's possible to build highly available enterprise-grade clusters. For a detailed analysis of Kafka's strengths and weaknesses, you can refer to my earlier blog post on industry research into message queues. Here, I'll briefly summarize some key points.  
 
-### Advantages of Kafka:
+### Pros of Kafka:
 
 1. **High Throughput and Low Latency**:  
    Kafka excels in throughput and latency due to its use of sequential file I/O for reading and writing messages. This efficient approach achieves exceptional performance with high speeds and minimal delay.  
@@ -86,7 +86,7 @@ Kafka's high throughput and low latency are exceptional. Its distributed design 
 4. **No Java GC-related Issues**:  
    As Kafka writes message data directly to disk, without storing or caching it in memory, it minimizes Java memory usage. This avoids the common garbage collection (GC) problems encountered with Java-based systems.
 
-### Disadvantages of Kafka:
+### Cons of Kafka:
 
 1. **System Complexity**:  
    Kafka's distributed multi-active mechanism introduces complexity, particularly around intra-cluster communication, leader election, partition leader management, topic lifecycle management, and message cleanup. These inter-node RPCs and consistency mechanisms across a complex distributed system create challenges in local data maintenance and pose significant bug risks.
@@ -132,7 +132,7 @@ Since page cache is managed by the operating system, there is minimal control av
 
 Pulsar is another highly popular message queue product with a large and active community. The advantages and disadvantages of Pulsar's architectural design have been discussed in detail in my previous blog, and a brief summary is provided below:
 
-### Advantages of Pulsar:
+### Pros of Pulsar:
 
 1. **Reduced Latency from Slow Nodes**:  
    Pulsar allows messages to be stored on the fastest two nodes, avoiding the latency impact caused by slower nodes during writes.
@@ -143,7 +143,7 @@ Pulsar is another highly popular message queue product with a large and active c
 3. **No Risk of Split-Brain**:  
    Since Pulsar's architecture lacks the concept of a leader, it avoids the risk of split-brain scenarios caused by network partitioning, which Kafka is susceptible to.
 
-### Disadvantages of Pulsar:
+### Cons of Pulsar:
 
 1. **Complex Architecture**:  
    Pulsar's architecture consists of three components: Pulsar, BookKeeper, and RocksDB. Data is distributed across these components, increasing complexity.

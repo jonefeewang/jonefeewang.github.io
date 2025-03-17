@@ -3,7 +3,7 @@ date: 2022-02-10 16:16:22
 ---
 姓名: 王军飞
 性别: 男
-邮箱: jonefeewang@outlook.com
+邮箱: jonefeewang@gmail.com
 
 职业: 互联网技术研发, 基础架构, 中间件技术
 爱好: 户外、运动、足球、技术geek、音乐HIFI、家庭影院
