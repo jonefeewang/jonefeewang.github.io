@@ -1,16 +1,17 @@
-title: 关于我自己
+title: About Me
 date: 2022-02-10 16:16:22
 ---
-姓名: 王军飞
-性别: 男
-邮箱: jonefeewang@gmail.com
 
-职业: 互联网技术研发, 基础架构, 中间件技术
-爱好: 户外、运动、足球、技术geek、音乐HIFI、家庭影院
+About Me  
+Name: Rex Wang  
+Gender: Male  
+Email: rexwang735@gmail.com  
 
-职业履历:
-2017.10 - 至今 美团点评 基础架构
-2011.4 - 2017.10 爱奇艺 从事架构设计、服务治理、基础组件研发
-2005.7 - 2011.4 Tom.com 资深工程师
-2003.7 - 2005.7 北京东华合创 高级工程师
+Profession: Internet Technology Research & Development, Infrastructure, Middleware Technologies  
+Hobbies: Outdoor Activities, Sports, Football, Technology Enthusiast, Hi-Fi Music, Home Theater  
 
+Career Experience:  
+- Oct 2017 – Present: Meituan Dianping, Infrastructure  
+- Apr 2011 – Oct 2017: iQIYI, involved in Architecture Design, Service Governance, and Core Component Development  
+- Jul 2005 – Apr 2011: Tom.com, Senior Engineer  
+- Jul 2003 – Jul 2005: Beijing Donghua Hechuang, Senior Engineer

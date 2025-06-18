@@ -4,12 +4,12 @@
 feed: false
 
 # Site
-title: 王军飞的随笔
+title: Rex Wang
 subtitle: 'always be the best'
-description: '王军飞的博客'
-keywords: '王军飞,jonefeewang'
-author: 王军飞
-language: zh-CN
+description: 'Rex Wangs blog'
+keywords: '王军飞,Rex Wang'
+author: 'Rex Wang'
+language: en-US
 timezone: 'Asia/Shanghai'
 sitemap:
   path: sitemap.xml
@@ -22,7 +22,6 @@ baidu_url_submit:
   host: www.wangjunfei.com ## 百度站长平台中注册的域名
   token: 5QLhV1YvFVFN2WNM ## 准入秘钥
   path: baidu_urls.txt ## 文本文档的地址， 新链接会保存在此文本文档里  
-
 
 # URL
 ## If your site is put in a subdirectory, set url as 'http://yoursite.com/child' and root as '/child/'

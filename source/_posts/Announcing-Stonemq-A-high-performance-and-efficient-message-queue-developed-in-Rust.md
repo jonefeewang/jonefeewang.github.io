@@ -22,11 +22,12 @@ tags:
 2.**Current Features (v0.1.0)**:  
    - Supports single-node message sending and receiving.  
    - Implements group consumption functionality.  
+   - Fully compatible with Kafka's client-server communication protocol, enabling seamless client-side migration without requiring modifications.  
+
 
 3.**Goal**:  
    - Aims to replace Kafka's server-side functionality in massive-scale queue cluster.  
    - Focused on reducing operational costs while improving efficiency.  
-   - Fully compatible with Kafka's client-server communication protocol, enabling seamless client-side migration without requiring modifications.  
 
 4.**Technology**:  
    - Entirely developed in **Rust**.  
@@ -58,9 +59,9 @@ tags:
 
 Stonemq aims to outperform Kafka in scenarios with massive-scale queue clusters, delivering enhanced performance and efficiency to achieve cost reduction and operational optimization.
 
-In use cases involving large clusters with countless queues—particularly in enterprise business services and public cloud services—there can be tens of thousands of partitions and partition leaders. Regardless of whether the queues contain messages, the volume of messages, or the flow rate, the presence or absence of active consumers in each partition poses a significant burden for cluster operators. Partition growth negatively impacts cluster throughput, while node failures or restarts often result in partition leader and controller switching, creating critical operational challenges. Stonemq addresses these inefficiencies.
+In extensive clusters with a vast number of queues, particularly within the context of corporate business services and public cloud service scenarios, tens of thousands of partitions and partition leaders exist. Regardless of whether queues contain messages, the volume of messages, or the intensity of traffic, or whether consumers for each partition remain active, as cluster operators, we cannot proactively reduce the number of user partitions. This imposes a tremendous burden on the cluster.  Cluster throughput declines sharply as the number of partitions increases, and node failures or restarts trigger partition leader and controller transitions—events that demand the operator’s close attention. These aspects require significant improvement.
 
-Cluster performance should remain consistent regardless of partition growth. Queues with varying traffic volumes need consolidation to enable more efficient message flow—akin to containerized shipping for multiple clients. This is precisely the vision of Stonemq. While solutions like Pulsar utilize journaling for centralized message handling, Stonemq seeks to retain Kafka's replication , which simplifies and standardizes cluster operation and maintenance.We believe this protocol is both straightforward and highly efficient, forming the backbone of our solution.Additionally, by reusing Kafka's client-server communication protocol, StoneMQ ensures seamless migration without requiring any changes to the user's client applications. This approach significantly reduces adoption costs for users, enabling a smooth transition to StoneMQ while retaining the familiar and reliable interface they are accustomed to. 
+Cluster performance should remain consistent regardless of partition growth. Queues with varying traffic volumes need consolidation to enable more efficient message flow—akin to containerized shipping for multiple clients. This is precisely the vision of Stonemq. While solutions like Pulsar utilize journaling for centralized message handling, Stonemq seeks to retain Kafka’s replication , which simplifies and standardizes cluster operation and maintenance.We believe this protocol is both straightforward and highly efficient, forming the backbone of our solution.Additionally, by reusing Kafka's client-server communication protocol, StoneMQ ensures seamless migration without requiring any changes to the user's client applications. This approach significantly reduces adoption costs for users, enabling a smooth transition to StoneMQ while retaining the familiar and reliable interface they are accustomed to. 
 
 ## Why Another Message Queue?
 
