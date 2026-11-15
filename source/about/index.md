@@ -3,7 +3,7 @@ date: 2022-02-10 16:16:22
 ---
 
 About Me  
-Name: Rex Wang  
+Name: Junfei Wang  
 Gender: Male  
 Email: rexwang735@gmail.com  
 

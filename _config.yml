@@ -4,11 +4,11 @@
 feed: false
 
 # Site
-title: Rex Wang
+title: Junfei Wang
 subtitle: 'always be the best'
-description: 'Rex Wangs blog'
-keywords: '王军飞,Rex Wang'
-author: 'Rex Wang'
+description: "Junfei Wang's blog"
+keywords: '王军飞,Junfei Wang,Rex Wang'
+author: 'Junfei Wang'
 language: en-US
 timezone: 'Asia/Shanghai'
 sitemap:
